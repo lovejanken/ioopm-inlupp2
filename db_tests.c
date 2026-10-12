@@ -30,7 +30,8 @@ int clean_suite(void) {
   return 0;
 }
 
-void 
+void test1();
+
 
 int main() {
   if (CU_initialize_registry() != CUE_SUCCESS)
