@@ -9,6 +9,7 @@
 #include "linked_list.h"
 #include "hash_table.h"
 #include "list_iterator.h"
+#include "common.h"
 
 struct merch
 {
@@ -18,22 +19,55 @@ struct merch
     ioopm_list_t *locs;
 };
 
-typedef struct merch merch_t;
-
-typedef ioopm_list_t cart_list_t;
-
 struct cart_item
 {
     merch_t *item;
     int amount;
 };
 
-typedef struct cart_item cart_item_t;
-
-typedef ioopm_hash_table_t cart_t;
-
-void ioopm_add_merch(ioopm_hash_table_t *ht, char *name, char *desc, int price)
+struct shelf
 {
+    char *shelf;
+    int quantity;
+};
+
+static void remove_stock(merch_t item)
+{
+    ioopm_list_t *location_list = item.locs;
+    ioopm_list_destroy(location_list);
+}
+
+bool ioopm_add_merch(ioopm_hash_table_t *ht, char *name, char *desc, int price)
+{
+    elem_t local;
+    if (ioopm_hash_table_lookup(ht, string_elem(name), &local))
+    {
+        return false;
+    }
+
+    merch_t new_item = 
+    {
+        .name = name,
+        .description = desc,
+        .price = price,
+        .locs = NULL
+
+    };
+
+    ioopm_hash_table_insert(ht, string_elem(name), merch_elem(new_item));
+    return true;
+}
+
+bool ioopm_remove_merch(ioopm_hash_table_t *ht, char *name)
+{
+    elem_t merch;
+    if (ioopm_hash_table_remove(ht, string_elem(name), &merch))
+    {
+        remove_stock(merch.m);
+        return true;
+    }
+
+    return false;
 }
 
 ///////////////
@@ -148,7 +182,7 @@ void editdb(item_t *items, int no_items)
     items[vara - 1] = input_item();
 }
 
-int main(int argc, char *argv[])
+/* int main(int argc, char *argv[])
 {
     srand(time(NULL));
   char *array1[] = {"apa", "katt", "hund" }; // TODO: Lägg till!
@@ -205,4 +239,4 @@ int main(int argc, char *argv[])
 
   }
   return 0;
-}
+} */

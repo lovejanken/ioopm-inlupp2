@@ -1,14 +1,19 @@
 #pragma once
 #include <stddef.h>
-#include "db.c"
 #include <stdbool.h>
+#include "common.h"
 
+typedef ioopm_list_t cart_list_t;
 
-void ioopm_add_merch(ioopm_hash_table_t *ht, char *name, char *desc, int price);
+typedef struct cart_item cart_item_t;
+
+typedef ioopm_hash_table_t cart_t;
+
+bool ioopm_add_merch(ioopm_hash_table_t *ht, char *name, char *desc, int price);
 
 void ioopm_list_merch(ioopm_hash_table_t *ht);
 
-void ioopm_remove_merch(ioopm_hash_table_t *ht, merch_t *item);
+bool ioopm_remove_merch(ioopm_hash_table_t *ht, char *name);
 
 void ioopm_edit_merch(ioopm_hash_table_t *ht, merch_t *item);
 

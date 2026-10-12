@@ -1,6 +1,9 @@
 #include <CUnit/Basic.h>
 #include "hash_table.h"
 #include "list_iterator.h"
+#include "linked_list.h"
+#include "db.h"
+#include "common.h"
 
 static bool string_eq(elem_t key1, elem_t key2)
 {
@@ -30,7 +33,19 @@ int clean_suite(void) {
   return 0;
 }
 
-void test1();
+void test1()
+{
+  ioopm_hash_table_t *ht = ioopm_hash_table_create(string_hash, string_eq);
+  elem_t result = int_elem(-1);
+  ioopm_add_merch(ht, "Stol", "Man kan sitta på den.", 200);
+  CU_ASSERT_TRUE(ioopm_hash_table_lookup(ht, string_elem("Stol"), &result));
+
+  ioopm_remove_merch(ht, "Stol");
+
+  CU_ASSERT_FALSE(ioopm_hash_table_lookup(ht, string_elem("Stol"), &result));
+
+  ioopm_hash_table_destroy(ht);
+}
 
 
 int main() {
@@ -44,7 +59,7 @@ int main() {
   }
 
   if (
-    (CU_add_test(my_test_suite, "Check if iterating over an empty ht works", test1) == NULL) ||
+    (CU_add_test(my_test_suite, "Check if add merch and remove merch work", test1) == NULL) ||
     0
   )
   {

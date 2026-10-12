@@ -1,7 +1,7 @@
 #pragma once
-
 #include <stdbool.h>
 #include <stddef.h>
+#include "db.h"
 
 /**
  * @file common.h
@@ -14,6 +14,11 @@
  * 
  */
 
+
+typedef struct merch merch_t;
+
+typedef struct shelf shelf_t;
+
 typedef union elem elem_t;
 
 union elem
@@ -24,6 +29,8 @@ union elem
     float f;
     void *p;
     char *s;
+    merch_t m;
+    shelf_t sh;
 };
 
 // macros for constructing elem_t values
@@ -31,6 +38,8 @@ union elem
 #define bool_elem(x) ((elem_t){.b = (x)})
 #define ptr_elem(x) ((elem_t){.p = (x)})
 #define string_elem(x) ((elem_t){.s = (x)})
+#define merch_elem(x) ((elem_t){.m = (x)})
+#define shelf_elem(x) ((elem_t){.sh = (x)})
 
 // ioopm_eq_function that compare elem_t of type bool, string, int, float have been implemented
 typedef bool ioopm_eq_function(elem_t a, elem_t b);
