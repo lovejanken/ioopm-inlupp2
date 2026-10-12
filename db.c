@@ -6,6 +6,39 @@
 #include <math.h>
 #include <time.h>
 #include <stdlib.h>
+#include "linked_list.h"
+#include "hash_table.h"
+#include "list_iterator.h"
+
+struct merch
+{
+    char *name;
+    char *description;
+    int price;
+    ioopm_list_t *locs;
+};
+
+typedef struct merch merch_t;
+
+typedef ioopm_list_t cart_list_t;
+
+struct cart_item
+{
+    merch_t *item;
+    int amount;
+};
+
+typedef struct cart_item cart_item_t;
+
+typedef ioopm_hash_table_t cart_t;
+
+void ioopm_add_merch(ioopm_hash_table_t *ht, char *name, char *desc, int price)
+{
+}
+
+///////////////
+///////////////
+
 
 struct item
 {
