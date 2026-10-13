@@ -141,9 +141,9 @@ bool check_yes_or_no(char *string)
 
 }
 
+
+
 char *ask_question_user_input(char *question, check_func *func)
 {
-    char *answer = ask_question(question, func, (convert_func *) strdup).string_value;
-    printf("%s", answer);
-    return answer;
+    return ask_question(question, func, (convert_func *) strdup).string_value;
 }

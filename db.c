@@ -69,7 +69,7 @@ void ioopm_list_merch(ioopm_hash_table_t *ht)
 
     while (!ioopm_hash_table_iterator_at_end(it))
     {
-        if (counter == 2)
+        if (counter == 4)
         {
             char *answer = ask_question_user_input("Do you want to continue printing merchandise?", check_yes_or_no);
             if (strcmp(answer, "N") == 0)
@@ -92,6 +92,41 @@ void ioopm_list_merch(ioopm_hash_table_t *ht)
 
 }
 
+void ioopm_edit_merch(ioopm_hash_table_t *ht)
+{
+    elem_t result = int_elem(-1);
+    elem_t local = int_elem(-1);
+    elem_t answer;
+    do {
+        answer = string_elem(ask_question_string("What merch do you want to edit?"));
+    } while (!ioopm_hash_table_lookup(ht, answer, &result));
+    
+    elem_t new_name;
+    do {
+        //TODO: Inkludera förklaring för varför namnet inte fungerar (Att det redan existerar)
+        new_name = string_elem(ask_question_string("What do you want the new name to be?"));
+    } while (ioopm_hash_table_lookup(ht, new_name, &local));
+
+    char *new_description = ask_question_string("What do you want the new description to be?");
+
+    int new_price = ask_question_int("What do you want the new price to be?");
+
+    char *confirmation = ask_question_user_input("Are you sure you want to edit the item?", check_yes_or_no);
+
+    if (strcmp(confirmation, "Y") == 0)
+    {
+        result.m.name = new_name.s;
+        result.m.description = new_description;
+        result.m.price = new_price;
+
+        //TODO: Ändra direkt i merchen med hjälp av en pekare utan att behöva remove + insert
+        ioopm_hash_table_remove(ht, answer, &local);
+        ioopm_hash_table_insert(ht, new_name, result);
+    }
+
+    else return;
+}
+
 int main(int argc, char *argv[])
 {
   ioopm_hash_table_t *ht = ioopm_hash_table_create(ioopm_hash_string, ioopm_string_comp);
@@ -102,6 +137,8 @@ int main(int argc, char *argv[])
   ioopm_add_merch(ht, "P", "Man kan sitta på den.", 200);
   ioopm_add_merch(ht, "Hs", "Man kan sitta på den.", 200);
   ioopm_add_merch(ht, "Gs", "Man kan sitta på den.", 200);
+  ioopm_list_merch(ht);
+  ioopm_edit_merch(ht);
   ioopm_list_merch(ht);
 
   ioopm_hash_table_destroy(ht);

@@ -17,7 +17,7 @@ void ioopm_list_merch(ioopm_hash_table_t *ht);
 
 bool ioopm_remove_merch(ioopm_hash_table_t *ht, char *name);
 
-void ioopm_edit_merch(ioopm_hash_table_t *ht, merch_t *item);
+void ioopm_edit_merch(ioopm_hash_table_t *ht);
 
 void ioopm_show_stock(ioopm_hash_table_t *ht, merch_t *item);
 
