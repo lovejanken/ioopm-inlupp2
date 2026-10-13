@@ -118,3 +118,32 @@ char *ask_question_string(char *question)
 {
   return ask_question(question, not_empty, (convert_func *) strdup).string_value;
 }
+
+bool check_yes_or_no(char *string)
+{
+    if (strlen(string) != 1)
+    {
+        return false;
+    }
+
+    char *valid_inputs = "YyNn";
+    char answer = string[0];
+
+    for (int i = 0; valid_inputs[i] != NULL; i++)
+    {
+        if (answer == valid_inputs[i])
+        {
+            return true;
+        }
+    }
+
+    return false;
+
+}
+
+char *ask_question_user_input(char *question, check_func *func)
+{
+    char *answer = ask_question(question, func, (convert_func *) strdup).string_value;
+    printf("%s", answer);
+    return answer;
+}

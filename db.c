@@ -11,6 +11,7 @@
 #include "list_iterator.h"
 #include "common.h"
 #include "db.h"
+#include "hash_table_iterator.h"
 
 struct cart_item
 {
@@ -58,6 +59,52 @@ bool ioopm_remove_merch(ioopm_hash_table_t *ht, char *name)
     }
 
     return false;
+}
+
+void ioopm_list_merch(ioopm_hash_table_t *ht)
+{
+    ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(ht);
+
+    int counter = 0;
+
+    while (!ioopm_hash_table_iterator_at_end(it))
+    {
+        if (counter == 2)
+        {
+            char *answer = ask_question_user_input("Do you want to continue printing merchandise?", check_yes_or_no);
+            if (strcmp(answer, "N") == 0)
+            {
+                printf("%s", answer);
+                break;
+            }
+
+            else
+            {
+                counter = 0;
+            }
+        }
+
+        merch_t current_item = ioopm_hash_table_iterator_current_value(it).m;
+        printf("Name: %s\nDescription: %s\nPrice: %d\n", current_item.name, current_item.description, current_item.price);
+        ioopm_hash_table_iterator_advance(it);
+        counter++;
+    }
+
+}
+
+int main(int argc, char *argv[])
+{
+  ioopm_hash_table_t *ht = ioopm_hash_table_create(ioopm_hash_string, ioopm_string_comp);
+  elem_t result = int_elem(-1);
+  ioopm_add_merch(ht, "Stol", "Man kan sitta på den.", 200);
+  ioopm_add_merch(ht, "Bord", "Man kan sitta på den.", 200);
+  ioopm_add_merch(ht, "S", "Man kan sitta på den.", 200);
+  ioopm_add_merch(ht, "P", "Man kan sitta på den.", 200);
+  ioopm_add_merch(ht, "Hs", "Man kan sitta på den.", 200);
+  ioopm_add_merch(ht, "Gs", "Man kan sitta på den.", 200);
+  ioopm_list_merch(ht);
+
+  ioopm_hash_table_destroy(ht);
 }
 
 ///////////////

@@ -23,6 +23,9 @@ HEADERS = $(wildcard *.h)
 test_db: db_tests.o db.o utils.o $(HASH_OBJS) $(LIST_OBJS)
 	$(CC) $^ -o $@ $(CUNIT)
 
+db: db.o utils.o $(HASH_OBJS) $(LIST_OBJS)
+	$(CC) $^ -o $@ $(CUNIT)
+
 TESTS = test_db
 
 test: $(TESTS)

@@ -47,6 +47,16 @@ void test1()
   ioopm_hash_table_destroy(ht);
 }
 
+void test2()
+{
+  ioopm_hash_table_t *ht = ioopm_hash_table_create(string_hash, string_eq);
+  elem_t result = int_elem(-1);
+  ioopm_add_merch(ht, "Stol", "Man kan sitta på den.", 200);
+  ioopm_list_merch(ht);
+
+  ioopm_hash_table_destroy(ht);
+}
+
 
 int main() {
   if (CU_initialize_registry() != CUE_SUCCESS)
@@ -60,6 +70,7 @@ int main() {
 
   if (
     (CU_add_test(my_test_suite, "Check if add merch and remove merch work", test1) == NULL) ||
+    (CU_add_test(my_test_suite, "Print test", test2) == NULL) ||
     0
   )
   {

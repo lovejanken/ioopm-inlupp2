@@ -22,4 +22,6 @@ void print(char *str);
 void println(char *str);
 answer_t ask_question(char *question, check_func *check, convert_func *convert);
 bool not_empty(char *str);
+char *ask_question_user_input(char *question, check_func *func);
+bool check_yes_or_no(char *string);
 #endif
