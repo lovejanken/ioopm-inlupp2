@@ -2,6 +2,8 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include "common.h"
+#include "hash_table.h"
+#include "linked_list.h"
 
 typedef ioopm_list_t cart_list_t;
 

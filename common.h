@@ -1,7 +1,6 @@
 #pragma once
 #include <stdbool.h>
 #include <stddef.h>
-#include "db.h"
 
 /**
  * @file common.h
@@ -18,6 +17,22 @@
 typedef struct merch merch_t;
 
 typedef struct shelf shelf_t;
+
+typedef struct list ioopm_list_t;
+
+struct merch
+{
+    char *name;
+    char *description;
+    int price;
+    ioopm_list_t *locs;
+};
+
+struct shelf
+{
+    char *shelf;
+    int quantity;
+};
 
 typedef union elem elem_t;
 

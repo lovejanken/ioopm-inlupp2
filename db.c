@@ -10,14 +10,7 @@
 #include "hash_table.h"
 #include "list_iterator.h"
 #include "common.h"
-
-struct merch
-{
-    char *name;
-    char *description;
-    int price;
-    ioopm_list_t *locs;
-};
+#include "db.h"
 
 struct cart_item
 {
@@ -25,16 +18,13 @@ struct cart_item
     int amount;
 };
 
-struct shelf
-{
-    char *shelf;
-    int quantity;
-};
-
 static void remove_stock(merch_t item)
 {
     ioopm_list_t *location_list = item.locs;
-    ioopm_list_destroy(location_list);
+    if (location_list != NULL)
+    {
+        ioopm_list_destroy(location_list);
+    }
 }
 
 bool ioopm_add_merch(ioopm_hash_table_t *ht, char *name, char *desc, int price)
