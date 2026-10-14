@@ -13,6 +13,8 @@
 #include "db.h"
 #include "hash_table_iterator.h"
 
+// Hej
+
 struct cart_item
 {
     merch_t *item;
@@ -125,6 +127,11 @@ void ioopm_edit_merch(ioopm_hash_table_t *ht)
     }
 
     else return;
+}
+
+void ioopm_show_stock(ioopm_hash_table_t *ht, merch_t *item)
+{
+    elem_t first_element = ioopm_list_head(item->locs);
 }
 
 int main(int argc, char *argv[])
