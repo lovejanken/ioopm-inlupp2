@@ -19,9 +19,9 @@ bool ioopm_remove_merch(ioopm_hash_table_t *ht, char *name);
 
 void ioopm_edit_merch(ioopm_hash_table_t *ht);
 
-void ioopm_show_stock(ioopm_hash_table_t *ht, merch_t *item);
+void ioopm_show_stock(merch_t *item);
 
-void ioopm_replenish(ioopm_hash_table_t *ht, merch_t *item, char *loc, int amount);
+void ioopm_replenish(merch_t *item);
 
 cart_t ioopm_create_cart();
 

@@ -18,14 +18,14 @@ typedef struct merch merch_t;
 
 typedef struct shelf shelf_t;
 
-typedef struct list ioopm_list_t;
+typedef struct list shelf_list_t;
 
 struct merch
 {
     char *name;
     char *description;
     int price;
-    ioopm_list_t *locs;
+    shelf_list_t *locs;
 };
 
 struct shelf

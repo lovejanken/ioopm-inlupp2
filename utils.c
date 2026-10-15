@@ -141,7 +141,14 @@ bool check_yes_or_no(char *string)
 
 }
 
-
+bool check_is_shelf(char *string)
+{
+    if (strlen(string) != 3 || !isalpha(string[0]) || !isdigit(string[1]) || !isdigit(string[2]))
+    {
+        return false;
+    }
+    return true;
+}
 
 char *ask_question_user_input(char *question, check_func *func)
 {
