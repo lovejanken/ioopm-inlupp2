@@ -155,14 +155,28 @@ void ioopm_show_stock(merch_t *item)
     } while (!ioopm_list_iterator_at_end(it));
 }
 
+static elem_t find_key_in_list(ioopm_list_t *list, char *key)
+{
+    ioopm_list_iterator_t *it = ioopm_list_iterator_create(list);
+
+    while (!ioopm_list_iterator_at_end(it))
+    {
+        if (ioopm_list_iterator_current(it).sh.shelf == key)
+        {
+            return ioopm_list_iterator_current(it);
+        }
+    }
+}
+
 void ioopm_replenish(ioopm_hash_table_t *ht, ioopm_hash_table_t *ht_stock)
 {
     char *location = ask_question_user_input("What location do you want to replenish?", check_is_shelf);
-    char *merch;
+    char *merch_name;
+    elem_t result = int_elem(-1);
     do
     {
-        merch = ask_question_string("What merch do you want to replenish?");
-    } while (ioopm_hash_table_has_key(ht, string_elem(merch)));
+        merch_name = ask_question_string("What merch do you want to replenish?");
+    } while (ioopm_hash_table_lookup(ht, string_elem(merch_name), &result));
     
     int amount;
     do
@@ -173,7 +187,17 @@ void ioopm_replenish(ioopm_hash_table_t *ht, ioopm_hash_table_t *ht_stock)
 
     if (ioopm_hash_table_has_key(ht_stock, string_elem(location)))
     {
-        
+        shelf_t curr_shelf = find_key_in_list(result.m.locs, location).sh;
+        curr_shelf.quantity += amount;
+    }
+
+    else
+    {
+        shelf_t new_shelf = {
+            .quantity = amount,
+            .shelf = location
+        };
+        ioopm_list_append(result.m.locs, shelf_elem(new_shelf));
     }
 }
 
