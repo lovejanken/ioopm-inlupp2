@@ -20,6 +20,11 @@ typedef struct shelf shelf_t;
 
 typedef struct list shelf_list_t;
 
+//Varje item i en cart, består av merch och antal i carten
+typedef struct cart_item cart_item_t;
+
+typedef struct hash_table ioopm_hash_table_t;
+
 struct merch
 {
     char *name;
@@ -55,6 +60,8 @@ union elem
 #define string_elem(x) ((elem_t){.s = (x)})
 #define merch_elem(x) ((elem_t){.m = (x)})
 #define shelf_elem(x) ((elem_t){.sh = (x)})
+#define cart_elem(x) ((elem_t){.c = (x)})
+#define cartitem_elem(x) ((elem_t){.ci = (x)})
 
 // ioopm_eq_function that compare elem_t of type bool, string, int, float have been implemented
 typedef bool ioopm_eq_function(elem_t a, elem_t b);

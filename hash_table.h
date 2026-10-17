@@ -15,7 +15,6 @@
  * 
  */
 
-typedef struct hash_table ioopm_hash_table_t;
 
 /// @brief create a new hash table
 /// @param hash_fn a function that takes a key and computes a hash value 
