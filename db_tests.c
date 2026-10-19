@@ -140,6 +140,74 @@ void add_to_cart()
   ioopm_destroy_store(store);
 }
 
+void remove_from_cart()
+{
+  store_t *store = ioopm_create_store();
+
+  ioopm_add_merch(store, "Banan", "Gul", 200);
+  ioopm_replenish(store, "A10", "Banan", 100);
+  cart_t *cart = ioopm_create_cart(store);
+  CU_ASSERT_TRUE(ioopm_add_to_cart(store, cart, "Banan", 10));
+
+  CU_ASSERT_TRUE(ioopm_remove_from_cart(cart, "Banan", 5));
+
+  elem_t result;
+
+  ioopm_hash_table_lookup(cart->items, string_elem("Banan"), &result);
+  CU_ASSERT_EQUAL(result.i, 5);
+
+  ioopm_destroy_store(store);
+}
+
+void calculate_cost()
+{
+  store_t *store = ioopm_create_store();
+
+  ioopm_add_merch(store, "Banan", "Gul", 1);
+  ioopm_add_merch(store, "Ägg", "Vitt", 1);
+  ioopm_add_merch(store, "Äpple", "Grönt", 1);
+  ioopm_replenish(store, "A10", "Banan", 5);
+  ioopm_replenish(store, "A10", "Banan", 5);
+  ioopm_replenish(store, "B20", "Ägg", 5);
+  ioopm_replenish(store, "B25", "Ägg", 5);
+  ioopm_replenish(store, "C10", "Äpple", 100);
+  cart_t *cart = ioopm_create_cart(store);
+  ioopm_add_to_cart(store, cart, "Banan", 10);
+  ioopm_add_to_cart(store, cart, "Ägg", 10);
+  ioopm_add_to_cart(store, cart, "Äpple", 10);
+
+  CU_ASSERT_EQUAL(ioopm_calculate_cost(store, cart), 30);
+
+
+  ioopm_destroy_store(store);
+}
+
+void checkout()
+{
+  store_t *store = ioopm_create_store();
+
+  ioopm_add_merch(store, "Banan", "Gul", 1);
+  ioopm_add_merch(store, "Ägg", "Vitt", 1);
+  ioopm_add_merch(store, "Äpple", "Grönt", 1);
+  ioopm_replenish(store, "A10", "Banan", 5);
+  ioopm_replenish(store, "A10", "Banan", 5);
+  ioopm_replenish(store, "B20", "Ägg", 5);
+  ioopm_replenish(store, "B25", "Ägg", 5);
+  ioopm_replenish(store, "C10", "Äpple", 100);
+  cart_t *cart = ioopm_create_cart(store);
+  ioopm_add_to_cart(store, cart, "Banan", 10);
+  ioopm_add_to_cart(store, cart, "Ägg", 10);
+  ioopm_add_to_cart(store, cart, "Äpple", 10);
+
+  CU_ASSERT_EQUAL(ioopm_calculate_cost(store, cart), 30);
+
+  ioopm_checkout(store, cart);
+  CU_ASSERT_PTR_NULL(cart);
+
+
+  ioopm_destroy_store(store);
+}
+
 
 int main() {
   if (CU_initialize_registry() != CUE_SUCCESS)
@@ -160,6 +228,9 @@ int main() {
     (CU_add_test(my_test_suite, "Check if replenishing merch works as intended", replenish_merch) == NULL) ||
     (CU_add_test(my_test_suite, "Check if creating a cart works", create_cart) == NULL) ||
     (CU_add_test(my_test_suite, "Check if adding to a cart works", add_to_cart) == NULL) ||
+    (CU_add_test(my_test_suite, "Check if removing from a cart works", remove_from_cart) == NULL) ||
+    (CU_add_test(my_test_suite, "Check if calculating cost works", calculate_cost) == NULL) ||
+    (CU_add_test(my_test_suite, "Check if checkout works", checkout) == NULL) ||
 0
   )
   {
