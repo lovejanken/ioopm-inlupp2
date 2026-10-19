@@ -342,7 +342,7 @@ cart_t *ioopm_create_cart(store_t *store)
 {
     cart_t *new_cart = malloc(sizeof(cart_t));
     new_cart->items = ioopm_hash_table_create(ioopm_hash_string, ioopm_string_comp);
-    ioopm_list_append(store->carts, ptr_elem(new_cart));
+    ioopm_list_append(store->carts, cart_elem(new_cart));
     return new_cart;
 }
 
@@ -370,14 +370,14 @@ static int sum_stock_of_merch(store_t *store, char *merch_name)
 static int sum_merch_stock_of_carts(store_t *store, char *merch_name)
 {
     ioopm_list_iterator_t *it = ioopm_list_iterator_create(store->carts);
-    cart_t current_cart;
+    cart_t *current_cart;
     int total_sum = 0;
     elem_t current_amount = int_elem(0);
 
     while (!ioopm_list_iterator_at_end(it))
     {
         current_cart = ioopm_list_iterator_current(it).c;
-        if (ioopm_hash_table_lookup(current_cart.items, string_elem(merch_name), &current_amount))
+        if (ioopm_hash_table_lookup(current_cart->items, string_elem(merch_name), &current_amount))
         {
             total_sum += current_amount.i;
         }

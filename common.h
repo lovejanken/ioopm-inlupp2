@@ -58,7 +58,7 @@ union elem
     char *s;
     merch_t m;
     shelf_t sh;
-    cart_t c;
+    cart_t *c;
 };
 
 // macros for constructing elem_t values
