@@ -5,12 +5,12 @@
 #include "hash_table.h"
 #include "linked_list.h"
 
+/*
 //Lista av alla carts som existerar
 typedef ioopm_list_t cart_list_t;
+*/
 
 typedef struct store store_t;
-
-typedef struct cart cart_t;
 
 store_t *ioopm_create_store(void);
 

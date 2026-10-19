@@ -13,18 +13,12 @@
 #include "db.h"
 #include "hash_table_iterator.h"
 
-// Hej
-
-struct cart
-{
-    ioopm_hash_table_t *items;
-};
-
-struct cart_item
+/* struct cart_item
 {
     merch_t *item;
     int amount;
 };
+*/
 
 struct store {
     ioopm_hash_table_t *merch_table;
@@ -352,10 +346,58 @@ cart_t *ioopm_create_cart(store_t *store)
     return new_cart;
 }
 
+static int sum_stock_of_merch(store_t *store, char *merch_name)
+{
+    elem_t merch = int_elem(-1);
+    ioopm_hash_table_lookup(store->merch_table, string_elem(merch_name), &merch);
+
+    ioopm_list_t *list = merch.m.locs;
+    ioopm_list_iterator_t *it = ioopm_list_iterator_create(list);
+
+    int total_stock = 0;
+
+    while (!ioopm_list_iterator_at_end(it))
+    {
+        total_stock += ioopm_list_iterator_current(it).sh.quantity;
+        ioopm_list_iterator_advance(it);
+    }
+
+    ioopm_list_iterator_destroy(it);
+
+    return total_stock;
+}
+
+static int sum_merch_stock_of_carts(store_t *store, char *merch_name)
+{
+    ioopm_list_iterator_t *it = ioopm_list_iterator_create(store->carts);
+    cart_t current_cart;
+    int total_sum = 0;
+    elem_t current_amount = int_elem(0);
+
+    while (!ioopm_list_iterator_at_end(it))
+    {
+        current_cart = ioopm_list_iterator_current(it).c;
+        if (ioopm_hash_table_lookup(current_cart.items, string_elem(merch_name), &current_amount))
+        {
+            total_sum += current_amount.i;
+        }
+        ioopm_list_iterator_advance(it);
+        
+    }
+    ioopm_list_iterator_destroy(it);
+
+    return total_sum;
+}
+
 bool ioopm_add_to_cart(store_t *store, cart_t *cart, char *merch_name, int amount)
 {
     if (ioopm_hash_table_has_key(store->merch_table, string_elem(merch_name)))
     {
+        int cart_stock = sum_merch_stock_of_carts(store, merch_name);
+        if ((sum_stock_of_merch(store, merch_name) - cart_stock) < amount)
+        {
+            return false;
+        }
         ioopm_hash_table_insert(cart->items, string_elem(merch_name), int_elem(amount));
         return true;
     }

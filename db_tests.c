@@ -4,6 +4,13 @@
 #include "linked_list.h"
 #include "db.h"
 #include "common.h"
+#include <stdlib.h>
+
+struct store {
+    ioopm_hash_table_t *merch_table;
+    ioopm_hash_table_t *stock_by_shelf;
+    ioopm_list_t *carts;
+};
 
 static bool string_eq(elem_t key1, elem_t key2)
 {
@@ -102,7 +109,33 @@ void replenish_merch()
 
   CU_ASSERT_EQUAL(result, 10);
 
-  CU_ASSERT_FALSE(ioopm_get_stock_from_location(store, "Äpple", "A1", &result));
+  CU_ASSERT_FALSE(ioopm_get_stock_from_location(store, "Äpple", "A15", &result));
+
+  ioopm_destroy_store(store);
+}
+
+void create_cart()
+{
+  store_t *store = ioopm_create_store();
+
+  ioopm_add_merch(store, "Banan", "Gul", 200);
+  cart_t *cart = ioopm_create_cart(store);
+  CU_ASSERT(cart != NULL);
+  ioopm_destroy_store(store);
+}
+
+void add_to_cart()
+{
+  store_t *store = ioopm_create_store();
+
+  ioopm_add_merch(store, "Banan", "Gul", 200);
+  ioopm_replenish(store, "A10", "Banan", 100);
+  cart_t *cart = ioopm_create_cart(store);
+  CU_ASSERT_TRUE(ioopm_add_to_cart(store, cart, "Banan", 10));
+
+  CU_ASSERT_FALSE(ioopm_add_to_cart(store, cart, "Banan", 91));
+
+  CU_ASSERT_TRUE(ioopm_add_to_cart(store, cart, "Banan", 90));
 
   ioopm_destroy_store(store);
 }
@@ -125,6 +158,8 @@ int main() {
     (CU_add_test(my_test_suite, "Check if removing non-existent merch works", remove_wrong_merch) == NULL) ||
     (CU_add_test(my_test_suite, "Check if editing existant merch works and checking that the old merch is removed", edit_existing_merch) == NULL) ||
     (CU_add_test(my_test_suite, "Check if replenishing merch works as intended", replenish_merch) == NULL) ||
+    (CU_add_test(my_test_suite, "Check if creating a cart works", create_cart) == NULL) ||
+    (CU_add_test(my_test_suite, "Check if adding to a cart works", add_to_cart) == NULL) ||
 0
   )
   {

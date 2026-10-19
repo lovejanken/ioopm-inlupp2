@@ -1,6 +1,3 @@
-# Makefile för inlupp 1 (hash table, länkad lista, iteratorer, frekvensräknare)
-# OBS: kommandoraderna under varje mål måste börja med ett TAB-tecken, inte mellanslag.
-
 CC      = gcc
 CFLAGS  = -Wall -Wextra -g
 CUNIT   = -lcunit
