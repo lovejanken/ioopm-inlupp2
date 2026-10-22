@@ -284,12 +284,12 @@ bool ioopm_show_stock(store_t *store, merch_t item)
     {
         shelf_list_t *item_list = item.locs;
         ioopm_list_iterator_t *it = ioopm_list_iterator_create(item_list);
-        do
+        while (!ioopm_list_iterator_at_end(it))
         {
             elem_t shelf = ioopm_list_iterator_current(it);
             printf("Shelf: %s, Quantity: %d\n", shelf.sh.shelf, shelf.sh.quantity);
             ioopm_list_iterator_advance(it);
-        } while (!ioopm_list_iterator_at_end(it));
+        }
 
         ioopm_list_iterator_destroy(it);
         return true;
@@ -308,13 +308,13 @@ static elem_t find_shelf_in_list(ioopm_list_t *list, char *key)
         {
             return ioopm_list_iterator_current(it);
         }
-        ioopm_list_iterator_advance(it);
     }
 }
 
 bool ioopm_replenish(store_t *store, char *location, char *merch_name, int amount)
 {
     if (amount < 1) return false;
+    int counter = 0;
 
     elem_t merch = int_elem(-1);
     if (ioopm_hash_table_lookup(store->stock_by_shelf, string_elem(location), &merch))
@@ -333,15 +333,12 @@ bool ioopm_replenish(store_t *store, char *location, char *merch_name, int amoun
             shelf_t shelf = ioopm_list_iterator_current(it).sh;
             if (strcmp(shelf.shelf, location) == 0)
             {
-                shelf_t new_shelf = 
-                {
-                    .quantity = shelf.quantity + amount,
-                    .shelf = strdup(location)
-                };
-                free(shelf.shelf);
-                ioopm_list_iterator_remove(it);
-                ioopm_list_iterator_insert(it, shelf_elem(new_shelf));
+                shelf.quantity += amount;
+                ioopm_list_remove(list, counter);
+                ioopm_list_insert(list, counter, shelf_elem(shelf));
+                break;
             }
+            counter++;
             ioopm_list_iterator_advance(it);
         }
 
@@ -352,16 +349,23 @@ bool ioopm_replenish(store_t *store, char *location, char *merch_name, int amoun
 
     else
     {
-        ioopm_hash_table_lookup(store->merch_table, string_elem(merch_name), &merch);
+        if (ioopm_hash_table_lookup(store->merch_table, string_elem(merch_name), &merch))
+        {
 
-        shelf_t shelf = {
-            .quantity = amount,
-            .shelf = strdup(location)
-        };
+            shelf_t shelf = {
+                .quantity = amount,
+                .shelf = strdup(location)
+            };
 
-        ioopm_list_append(merch.m.locs, shelf_elem(shelf));
-        ioopm_hash_table_insert(store->stock_by_shelf, string_elem(shelf.shelf), merch);
-        return true;
+            ioopm_list_append(merch.m.locs, shelf_elem(shelf));
+            ioopm_hash_table_insert(store->stock_by_shelf, string_elem(shelf.shelf), merch);
+            return true;
+        }
+
+        else
+        {
+            return false;
+        }
     }
 }
 
@@ -475,10 +479,10 @@ static void remove_stock_from_available(store_t *store, char *merch_name, int am
     int quantity = 0;
     ioopm_hash_table_lookup(store->merch_table, string_elem(merch_name), &current_merch);
     ioopm_list_t *locations = current_merch.m.locs;
-
     ioopm_list_iterator_t *it = ioopm_list_iterator_create(locations);
+    int counter = 0;
 
-    while (amount > 0 && !ioopm_list_iterator_at_end)
+    while (amount > 0)
     {
         current = ioopm_list_iterator_current(it);
         quantity = current.sh.quantity;
@@ -488,29 +492,28 @@ static void remove_stock_from_available(store_t *store, char *merch_name, int am
             amount -= quantity;
             char *shelf_name = current.sh.shelf;
             ioopm_hash_table_remove(store->stock_by_shelf, string_elem(shelf_name), &local);
+            ioopm_list_remove(locations, counter);
             free(current.sh.shelf);
-            ioopm_list_iterator_remove(it);
         }
 
         else
         {
             quantity -= amount;
             amount = 0;
-            char *shelf_name = ioopm_list_iterator_current(it).sh.shelf;
-            ioopm_list_iterator_remove(it);
-            shelf_t new_shelf = 
-            {
-                .quantity = quantity,
-                .shelf = strdup(shelf_name)
-            };
-            free(shelf_name);
-            ioopm_list_iterator_insert(it, shelf_elem(new_shelf));
+            current.sh.quantity = quantity;
+            break;
+            
         }
 
         ioopm_list_iterator_advance(it);
+        counter++;
     }
 
     ioopm_hash_table_remove(store->merch_table, string_elem(merch_name), &local);
+
+    current_merch.m.locs = locations;
+
+    ioopm_hash_table_insert(store->merch_table, string_elem(current_merch.m.name), current_merch);
 
     ioopm_list_iterator_destroy(it);
 }
