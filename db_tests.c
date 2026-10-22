@@ -12,6 +12,13 @@ struct store {
     ioopm_list_t *carts;
 };
 
+struct list
+{
+    node_t *first; // points to the first entry (possibly NULL)
+    node_t *last;  // points to the last entry (possibly NULL)
+    int size;      // holds size of list
+};
+
 static bool string_eq(elem_t key1, elem_t key2)
 {
   return (strcmp(key1.s, key2.s) == 0);
@@ -196,14 +203,23 @@ void checkout()
   ioopm_replenish(store, "C10", "Äpple", 100);
   cart_t *cart = ioopm_create_cart(store);
   ioopm_add_to_cart(store, cart, "Banan", 10);
-  ioopm_add_to_cart(store, cart, "Ägg", 10);
+  ioopm_add_to_cart(store, cart, "Ägg", 8);
   ioopm_add_to_cart(store, cart, "Äpple", 10);
 
   CU_ASSERT_EQUAL(ioopm_calculate_cost(store, cart), 30);
 
-  ioopm_checkout(store, cart);
-  CU_ASSERT_PTR_NULL(cart);
+  elem_t merch;
+  ioopm_hash_table_lookup(store->merch_table, string_elem("Ägg"), &merch);
+  ioopm_list_t *list = merch.m.locs;
+  int size = list->size;
+  ioopm_show_stock(store, merch.m);
+  
 
+  ioopm_checkout(store, cart);
+
+  ioopm_hash_table_lookup(store->merch_table, string_elem("Ägg"), &merch);
+
+  ioopm_show_stock(store, merch.m);
 
   ioopm_destroy_store(store);
 }
