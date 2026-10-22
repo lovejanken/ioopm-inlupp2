@@ -475,47 +475,40 @@ static void remove_stock_from_available(store_t *store, char *merch_name, int am
 {
     elem_t current_merch = int_elem(-1);
     elem_t local = int_elem(-1);
-    elem_t current = int_elem(-1);
     int quantity = 0;
     ioopm_hash_table_lookup(store->merch_table, string_elem(merch_name), &current_merch);
     ioopm_list_t *locations = current_merch.m.locs;
-    ioopm_list_iterator_t *it = ioopm_list_iterator_create(locations);
     int counter = 0;
+    int local_amount = amount;
+    int list_size = ioopm_list_size(locations);
 
-    while (amount > 0)
+    while (local_amount > 0 && counter < list_size)
     {
-        current = ioopm_list_iterator_current(it);
-        quantity = current.sh.quantity;
+        shelf_t shelf = ioopm_list_get(locations, counter).sh;
+        //printf("SHELF NAME: %s\n", shelf.shelf);
+        quantity = shelf.quantity;
 
-        if (amount >= quantity)
+        if (local_amount >= quantity)
         {
-            amount -= quantity;
-            char *shelf_name = current.sh.shelf;
-            ioopm_hash_table_remove(store->stock_by_shelf, string_elem(shelf_name), &local);
+            local_amount = local_amount - quantity;
+            //printf("LOCAL AMOUNT: %d\n", local_amount);
+            ioopm_hash_table_remove(store->stock_by_shelf, string_elem(shelf.shelf), &local);
             ioopm_list_remove(locations, counter);
-            free(current.sh.shelf);
+            free(shelf.shelf);
         }
 
         else
         {
-            quantity -= amount;
-            amount = 0;
-            current.sh.quantity = quantity;
-            break;
+            shelf.quantity = shelf.quantity - local_amount;
+            //printf("SHELF QUANTITY: %d\n", shelf.quantity);
+            local_amount = 0;
+            ioopm_list_append(locations, shelf_elem(shelf));
+            elem_t test = ioopm_list_last(locations);
+            ioopm_list_remove(locations, counter);
+            counter++;
             
         }
-
-        ioopm_list_iterator_advance(it);
-        counter++;
     }
-
-    ioopm_hash_table_remove(store->merch_table, string_elem(merch_name), &local);
-
-    current_merch.m.locs = locations;
-
-    ioopm_hash_table_insert(store->merch_table, string_elem(current_merch.m.name), current_merch);
-
-    ioopm_list_iterator_destroy(it);
 }
 
 void ioopm_checkout(store_t *store, cart_t *cart)
