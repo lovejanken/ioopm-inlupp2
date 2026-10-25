@@ -1,9 +1,106 @@
 #include <stdio.h>
-#include <ctype.h>
+#include <stdbool.h>
 #include <string.h>
 #include "utils.h"
-#include <stdbool.h>
+#include <ctype.h>
+#include <math.h>
+#include <time.h>
+#include <stdlib.h>
+#include "linked_list.h"
+#include "hash_table.h"
+#include "list_iterator.h"
+#include "common.h"
+#include "db.h"
+#include "hash_table_iterator.h"
 
+
+void print_menu()
+{
+    printf(
+        "[A] Add Merchandise\n"
+        "[L] List Merchandise\n"
+        "[D] Remove Merchandise\n"
+        "[E] Edit Merchandise\n"
+        "[S] Show Stock\n"
+        "[P] Replenish\n"
+        "[C] Create Cart\n"
+        "[R] Remove Cart\n"
+        "[+] Add To Cart\n"
+        "[-] Remove From Cart\n"
+        "[=] Calculate Cost\n"
+        "[O] Checkout\n"
+        "[Q] Quit"
+    );
+}
+
+answer_t versal(char *str)
+{
+    answer_t converted;
+    converted.char_value = toupper(str[0]);
+    return converted;
+}
+
+bool check_answer(char *str)
+{
+    if (strlen(str) != 1)
+    {
+        return false;
+    }
+
+    char *correct_answers = "AaLlDdEeSsPpCcRr+-=OoQq";
+    for (int i = 0; i < strlen(correct_answers); i++)
+    {
+        if (str == correct_answers[i]) return true;
+    }
+
+    return false;
+}
+
+char ask_question_menu(char *question)
+{
+    answer_t answer = ask_question(question, check_answer, versal);
+    return answer.char_value;
+}
+
+int event_loop(store_t *store)
+{
+    int answer;
+    do {
+        print_menu();
+
+        answer = ask_question_menu("What do you want to do?: ");
+
+        if (answer == 'A')
+        {
+            ioopm_add_merch()
+        }
+
+        else if (answer == 'T')
+        {
+            no_items = remove_item_from_db(items, no_items);
+        }
+
+        else if (answer == 'R')
+        {
+            editdb(items, no_items);
+        }
+
+        else if (answer == 'G')
+        {
+            printf("Not yet implemented\n");
+        }
+
+        else if (answer == 'H')
+        {
+            list_db(items, no_items);
+        }
+    } while (answer != 'A');
+
+    return 0;
+}
+
+
+/*
 struct item
 {
     char *name;
@@ -228,3 +325,4 @@ int main()
     int db_siz = 0; // Antalet varor i arrayen just nu
     event_loop(db, db_siz);
 }
+    */

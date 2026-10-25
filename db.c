@@ -179,37 +179,6 @@ bool ioopm_remove_merch(store_t *store, char *name)
     return true;
 }
 
-void ioopm_list_merch(store_t *store)
-{
-    ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(store->merch_table);
-
-    int counter = 0;
-
-    while (!ioopm_hash_table_iterator_at_end(it))
-    {
-        if (counter == 4)
-        {
-            char *answer = ask_question_user_input("Do you want to continue printing merchandise?", check_yes_or_no);
-            if (strcmp(answer, "N") == 0)
-            {
-                printf("%s", answer);
-                break;
-            }
-
-            else
-            {
-                counter = 0;
-            }
-        }
-
-        merch_t current_item = ioopm_hash_table_iterator_current_value(it).m;
-        printf("Name: %s\nDescription: %s\nPrice: %d\n", current_item.name, current_item.description, current_item.price);
-        ioopm_hash_table_iterator_advance(it);
-        counter++;
-    }
-
-}
-
 bool ioopm_edit_merch(store_t *store, char *old_name, char *new_name, char *new_description, int new_price)
 {
     elem_t local;
@@ -296,19 +265,6 @@ bool ioopm_show_stock(store_t *store, merch_t item)
     }
 
     else return false;
-}
-
-static elem_t find_shelf_in_list(ioopm_list_t *list, char *key)
-{
-    ioopm_list_iterator_t *it = ioopm_list_iterator_create(list);
-
-    while (!ioopm_list_iterator_at_end(it))
-    {
-        if (ioopm_list_iterator_current(it).sh.shelf == key)
-        {
-            return ioopm_list_iterator_current(it);
-        }
-    }
 }
 
 bool ioopm_replenish(store_t *store, char *location, char *merch_name, int amount)
@@ -527,6 +483,12 @@ void ioopm_checkout(store_t *store, cart_t *cart)
     ioopm_remove_cart(store, cart);
     ioopm_hash_table_iterator_destroy(it);
 
+}
+
+void quit(store_t *store)
+{
+    ioopm_destroy_store(store);
+    return;
 }
 
 /* int main(int argc, char *argv[])
