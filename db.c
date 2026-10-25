@@ -160,6 +160,37 @@ bool ioopm_add_merch(store_t *store, char *name, char *desc, int price)
     return true;
 }
 
+void ioopm_list_merch(store_t *store)
+{
+    ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(store->merch_table);
+
+    int counter = 0;
+
+    while (!ioopm_hash_table_iterator_at_end(it))
+    {
+        if (counter == 4)
+        {
+            char *answer = ask_question_user_input("Do you want to continue printing merchandise?", check_yes_or_no);
+            if (strcmp(answer, "N") == 0)
+            {
+                printf("%s", answer);
+                break;
+            }
+
+            else
+            {
+                counter = 0;
+            }
+        }
+
+        merch_t current_item = ioopm_hash_table_iterator_current_value(it).m;
+        printf("Name: %s\nDescription: %s\nPrice: %d\n\n", current_item.name, current_item.description, current_item.price);
+        ioopm_hash_table_iterator_advance(it);
+        counter++;
+    }
+
+}
+
 bool ioopm_remove_merch(store_t *store, char *name)
 {
     elem_t merch;

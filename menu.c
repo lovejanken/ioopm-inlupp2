@@ -29,7 +29,7 @@ void print_menu()
         "[-] Remove From Cart\n"
         "[=] Calculate Cost\n"
         "[O] Checkout\n"
-        "[Q] Quit"
+        "[Q] Quit\n"
     );
 }
 
@@ -50,7 +50,7 @@ bool check_answer(char *str)
     char *correct_answers = "AaLlDdEeSsPpCcRr+-=OoQq";
     for (int i = 0; i < strlen(correct_answers); i++)
     {
-        if (str == correct_answers[i]) return true;
+        if (str[0] == correct_answers[i]) return true;
     }
 
     return false;
@@ -60,6 +60,26 @@ char ask_question_menu(char *question)
 {
     answer_t answer = ask_question(question, check_answer, versal);
     return answer.char_value;
+}
+
+void add_merch_question(store_t *store)
+{
+    char *name = ask_question_string("Name of the merchandise: ");
+    char *description = ask_question_string("Description of the merchandise: ");
+    int price = ask_question_int("Price of the merchandise: ");
+    if (!ioopm_add_merch(store, name, description, price))
+    {
+        printf("Merch is already added.\n");
+    }
+}
+
+void remove_merch_question(store_t *store)
+{
+    char *merch = "";
+    do
+    {
+        merch = ask_question_string("What merchandise do you want to remove?");
+    } while (!ioopm_remove_merch(store, merch));
 }
 
 int event_loop(store_t *store)
@@ -72,17 +92,17 @@ int event_loop(store_t *store)
 
         if (answer == 'A')
         {
-            ioopm_add_merch()
+            add_merch_question(store);
         }
 
-        else if (answer == 'T')
+        else if (answer == 'L')
         {
-            no_items = remove_item_from_db(items, no_items);
+            ioopm_list_merch(store);
         }
 
-        else if (answer == 'R')
+        else if (answer == 'D')
         {
-            editdb(items, no_items);
+            remove_merch_question(store);
         }
 
         else if (answer == 'G')
@@ -90,13 +110,15 @@ int event_loop(store_t *store)
             printf("Not yet implemented\n");
         }
 
-        else if (answer == 'H')
-        {
-            list_db(items, no_items);
-        }
-    } while (answer != 'A');
+    } while (answer != 'Q');
 
     return 0;
+}
+
+int main(void)
+{
+    store_t *store = ioopm_create_store();
+    event_loop(store);
 }
 
 
