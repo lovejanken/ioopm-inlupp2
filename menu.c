@@ -75,11 +75,82 @@ void add_merch_question(store_t *store)
 
 void remove_merch_question(store_t *store)
 {
-    char *merch = "";
-    do
+    if (ioopm_merch_is_empty(store))
     {
-        merch = ask_question_string("What merchandise do you want to remove?");
-    } while (!ioopm_remove_merch(store, merch));
+        printf("There are no merch to remove.\n");
+        return;
+    }
+
+    ioopm_list_merch(store);
+    char *merch = ask_question_string("What merchandise do you want to remove?");
+    char *confirmation = ask_question_string("[Y/N] Are you sure you want to remove the merch?");
+    if (check_yes(confirmation))
+    {
+        if (!ioopm_remove_merch(store, merch))
+        {
+            printf("Merch does not exist.\n");
+        }
+    }
+}
+
+static bool always_true(char *string)
+{
+    return true;
+}
+
+void edit_merch_question(store_t *store)
+{
+    if (ioopm_merch_is_empty(store))
+    {
+        printf("There are no merch to edit.\n");
+        return;
+    }
+
+    ioopm_list_merch(store);
+    char *old_name = ask_question_string("What merchandise do you want to edit?");
+    char *new_name = ask_question_string("What do you want the new name to be?");
+    char *new_description = ask_question_string("What do you want the new description to be?");
+    int new_price = ask_question_int("What do you want the new price to be?");
+
+    char *confirmation = ask_question_user_input("[Y/N] Are you sure you want to edit the merch?", always_true);
+    if (check_yes(confirmation))
+    {
+        if (!ioopm_edit_merch(store, old_name, new_name, new_description, new_price))
+        {
+            printf("Merch to edit does not exist.\n");
+        }
+    }
+}
+
+void show_stock_question(store_t *store)
+{
+    ioopm_list_merch(store);
+    char *merch = ask_question_string("What merch do you want to see the stock of?");
+    if (!ioopm_show_stock(store, merch))
+    {
+        printf("The merch doesn't exist.\n");
+    }
+}
+
+void replenish_question(store_t *store)
+{
+    ioopm_list_merch(store);
+    char *shelf = ask_question_string("What is the name of the shelf you want to replenish?");
+    char *merch_name = ask_question_string("What is the name of the merch you want to replenish?");
+    int quantity = ask_question_int("How many items do you want to add?");
+
+    if (check_is_shelf(shelf))
+    {
+        if (!ioopm_replenish(store, shelf, merch_name, quantity))
+        {
+            printf("Merch either doesn't exist or another merch already occupies that shelf.\n");
+        }
+    }
+
+    else
+    {
+        printf("Name of the shelf is not a valid ID.\n");
+    }
 }
 
 int event_loop(store_t *store)
@@ -105,9 +176,24 @@ int event_loop(store_t *store)
             remove_merch_question(store);
         }
 
-        else if (answer == 'G')
+        else if (answer == 'E')
         {
-            printf("Not yet implemented\n");
+            edit_merch_question(store);
+        }
+
+        else if (answer == 'S')
+        {
+            show_stock_question(store);
+        }
+
+        else if (answer == 'P')
+        {
+            replenish_question(store);
+        }
+
+        else if (answer == 'C')
+        {
+            cart_t *current_cart = ioopm_create_cart(store);
         }
 
     } while (answer != 'Q');

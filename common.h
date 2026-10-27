@@ -16,9 +16,9 @@
 
 typedef struct merch merch_t;
 
-typedef struct shelf shelf_t;
+typedef struct list ioopm_list_t;
 
-typedef struct list shelf_list_t;
+typedef struct shelf shelf_t;
 
 typedef struct cart cart_t;
 
@@ -32,7 +32,7 @@ struct merch
     char *name;
     char *description;
     int price;
-    shelf_list_t *locs;
+    ioopm_list_t *locs;
 };
 
 struct shelf
@@ -44,6 +44,7 @@ struct shelf
 struct cart
 {
     ioopm_hash_table_t *items;
+    size_t id;
 };
 
 typedef union elem elem_t;

@@ -26,9 +26,13 @@ bool ioopm_edit_merch(store_t *store, char *old_name, char *new_name, char *new_
 
 bool ioopm_get_stock_from_location(store_t *store, char *merch_name, char *location, int *result);
 
-bool ioopm_show_stock(store_t *store, merch_t item);
+bool ioopm_show_stock(store_t *store, char *merch_name);
 
 bool ioopm_replenish(store_t *store, char *location, char *merch_name, int amount);
+
+bool ioopm_merch_exists(store_t *store, char *merch_name);
+
+bool ioopm_merch_is_empty(store_t *store);
 
 cart_t *ioopm_create_cart(store_t *store);
 

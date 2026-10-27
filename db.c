@@ -38,7 +38,7 @@ store_t *ioopm_create_store(void)
 
 static void remove_stock(merch_t item)
 {
-    shelf_list_t *location_list = item.locs;
+    ioopm_list_t *location_list = item.locs;
     if (location_list != NULL)
     {
         ioopm_list_destroy(location_list);
@@ -168,12 +168,11 @@ void ioopm_list_merch(store_t *store)
 
     while (!ioopm_hash_table_iterator_at_end(it))
     {
-        if (counter == 4)
+        if (counter == 20)
         {
-            char *answer = ask_question_user_input("Do you want to continue printing merchandise?", check_yes_or_no);
-            if (strcmp(answer, "N") == 0)
+            char *answer = ask_question_string("[Y/N] Do you want to continue printing merch?");
+            if (check_no(answer))
             {
-                printf("%s", answer);
                 break;
             }
 
@@ -248,6 +247,16 @@ bool ioopm_edit_merch(store_t *store, char *old_name, char *new_name, char *new_
     return false;
 }
 
+bool ioopm_merch_exists(store_t *store, char *merch_name)
+{
+    return ioopm_hash_table_has_key(store->merch_table, string_elem(merch_name));
+}
+
+bool ioopm_merch_is_empty(store_t *store)
+{
+    return ioopm_hash_table_is_empty(store->merch_table);
+}
+
 bool ioopm_get_stock_from_location(store_t *store, char *merch_name, char *location, int *result)
 {
     elem_t merch = int_elem(-1);
@@ -278,11 +287,17 @@ bool ioopm_get_stock_from_location(store_t *store, char *merch_name, char *locat
     
 }
 
-bool ioopm_show_stock(store_t *store, merch_t item)
+bool ioopm_show_stock(store_t *store, char *merch_name)
 {
-    if (ioopm_hash_table_has_key(store->merch_table, string_elem(item.name)))
+    elem_t merch = int_elem(-1);
+    if (ioopm_hash_table_lookup(store->merch_table, string_elem(merch_name), &merch))
     {
-        shelf_list_t *item_list = item.locs;
+        ioopm_list_t *item_list = merch.m.locs;
+        if (ioopm_list_is_empty(item_list))
+        {
+            printf("Merch doesn't have any stock.\n");
+            return true;
+        }
         ioopm_list_iterator_t *it = ioopm_list_iterator_create(item_list);
         while (!ioopm_list_iterator_at_end(it))
         {
