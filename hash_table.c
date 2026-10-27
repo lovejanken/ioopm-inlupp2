@@ -116,7 +116,9 @@ static void destroy_linked_list_cart(entry_t *curr)
     while (curr != NULL)
     {
         entry_t *new_curr = curr->next;
-        ioopm_hash_table_destroy(curr);
+        ioopm_hash_table_destroy(curr->value.c->items);
+        free(curr->value.c);
+        free(curr);
         curr = new_curr;
     }
 }
@@ -136,6 +138,7 @@ void ioopm_hash_table_destroy_cart(ioopm_hash_table_t *ht)
         // else destroys current list
         else
         {
+            printf("HEJHEJ\n");
             destroy_linked_list_cart(curr_list);
         }
     }

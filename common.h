@@ -44,7 +44,7 @@ struct shelf
 struct cart
 {
     ioopm_hash_table_t *items;
-    size_t id;
+    int id;
 };
 
 typedef union elem elem_t;

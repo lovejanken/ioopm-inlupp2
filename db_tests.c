@@ -126,8 +126,8 @@ void create_cart()
   store_t *store = ioopm_create_store();
 
   ioopm_add_merch(store, "Banan", "Gul", 200);
-  cart_t *cart = ioopm_create_cart(store);
-  CU_ASSERT(cart != NULL);
+  ioopm_create_cart(store);
+  CU_ASSERT(store->carts == NULL);
   ioopm_destroy_store(store);
 }
 
@@ -137,7 +137,7 @@ void add_to_cart()
 
   ioopm_add_merch(store, "Banan", "Gul", 200);
   ioopm_replenish(store, "A10", "Banan", 100);
-  cart_t *cart = ioopm_create_cart(store);
+  ioopm_create_cart(store);
   CU_ASSERT_TRUE(ioopm_add_to_cart(store, cart, "Banan", 10));
 
   CU_ASSERT_FALSE(ioopm_add_to_cart(store, cart, "Banan", 91));
@@ -215,7 +215,7 @@ void checkout()
   elem_t Ägg;
   ioopm_hash_table_lookup(store->merch_table, string_elem("Ägg"), &Ägg);
 
-  ioopm_show_stock(store, Ägg.m);
+  ioopm_show_stock(store, "Ägg");
 
   cart_t *cart_2 = ioopm_create_cart(store);
   ioopm_add_to_cart(store, cart_2, "Banan", 1);

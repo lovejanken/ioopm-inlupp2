@@ -34,9 +34,9 @@ bool ioopm_merch_exists(store_t *store, char *merch_name);
 
 bool ioopm_merch_is_empty(store_t *store);
 
-cart_t *ioopm_create_cart(store_t *store);
+void ioopm_create_cart(store_t *store);
 
-bool ioopm_remove_cart(store_t *store, cart_t *cart);
+bool ioopm_remove_cart(store_t *store, int cart_id);
 
 bool ioopm_add_to_cart(store_t *store, cart_t *cart, char *merch_name, int amount);
 

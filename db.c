@@ -23,15 +23,18 @@
 struct store {
     ioopm_hash_table_t *merch_table;
     ioopm_hash_table_t *stock_by_shelf;
-    ioopm_list_t *carts;
+    ioopm_hash_table_t *carts;
+    int number_of_carts;
 };
+
 
 store_t *ioopm_create_store(void)
 {
     store_t *store = malloc(sizeof(store_t));
-    store->carts = ioopm_list_create();
+    store->carts = ioopm_hash_table_create(ioopm_hash_int, ioopm_int_comp);
     store->merch_table = ioopm_hash_table_create(ioopm_hash_string, ioopm_string_comp);
     store->stock_by_shelf = ioopm_hash_table_create(ioopm_hash_string, ioopm_string_comp);
+    store->number_of_carts = 0;
 
     return store;
 }
@@ -101,32 +104,18 @@ static void destroy_cart(cart_t *cart)
 
 static void destroy_all_carts(store_t *store)
 {
-    while (!ioopm_list_is_empty(store->carts))
-    {
-        elem_t current_entry = ioopm_list_remove(store->carts, 0);
-        destroy_cart(current_entry.p);
-    }
-
-    ioopm_list_destroy(store->carts);
-    store->carts = NULL;
+   ioopm_hash_table_destroy_cart(store->carts);
 }
 
-bool ioopm_remove_cart(store_t *store, cart_t *cart)
+bool ioopm_remove_cart(store_t *store, int cart_id)
 {
-    ioopm_list_iterator_t *it = ioopm_list_iterator_create(store->carts);
-    while (!ioopm_list_iterator_at_end(it))
+    elem_t local;
+    if (ioopm_hash_table_remove(store->carts, int_elem(cart_id), &local))
     {
-        if (ioopm_list_iterator_current(it).c == cart)
-        {
-            destroy_cart(cart);
-            ioopm_list_iterator_remove(it);
-            ioopm_list_iterator_destroy(it);
-            return true;
-        }
-        ioopm_list_iterator_advance(it);
+        destroy_cart(local.c);
+        return true;
     }
 
-    ioopm_list_iterator_destroy(it);
     return false;
 }
 
@@ -371,12 +360,14 @@ bool ioopm_replenish(store_t *store, char *location, char *merch_name, int amoun
     }
 }
 
-cart_t *ioopm_create_cart(store_t *store)
+void ioopm_create_cart(store_t *store)
 {
     cart_t *new_cart = malloc(sizeof(cart_t));
     new_cart->items = ioopm_hash_table_create(ioopm_hash_string, ioopm_string_comp);
-    ioopm_list_append(store->carts, cart_elem(new_cart));
-    return new_cart;
+    store->number_of_carts++;
+    new_cart->id = store->number_of_carts;
+    ioopm_hash_table_insert(store->carts, int_elem(store->number_of_carts), cart_elem(new_cart));
+
 }
 
 static int sum_stock_of_merch(store_t *store, char *merch_name)
@@ -402,22 +393,22 @@ static int sum_stock_of_merch(store_t *store, char *merch_name)
 
 static int sum_merch_stock_of_carts(store_t *store, char *merch_name)
 {
-    ioopm_list_iterator_t *it = ioopm_list_iterator_create(store->carts);
+    ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(store->carts);
     cart_t *current_cart;
     int total_sum = 0;
     elem_t current_amount = int_elem(0);
 
-    while (!ioopm_list_iterator_at_end(it))
+    while (!ioopm_hash_table_iterator_at_end(it))
     {
-        current_cart = ioopm_list_iterator_current(it).c;
+        current_cart = ioopm_hash_table_iterator_current_value(it).c;
         if (ioopm_hash_table_lookup(current_cart->items, string_elem(merch_name), &current_amount))
         {
             total_sum += current_amount.i;
         }
-        ioopm_list_iterator_advance(it);
+        ioopm_hash_table_iterator_advance(it);
         
     }
-    ioopm_list_iterator_destroy(it);
+    ioopm_hash_table_iterator_destroy(it);
 
     return total_sum;
 }
@@ -526,7 +517,7 @@ void ioopm_checkout(store_t *store, cart_t *cart)
         ioopm_hash_table_iterator_advance(it);
     }
 
-    ioopm_remove_cart(store, cart);
+    ioopm_remove_cart(store, cart->id);
     ioopm_hash_table_iterator_destroy(it);
 
 }
