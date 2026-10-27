@@ -26,6 +26,10 @@ ioopm_hash_table_t *ioopm_hash_table_create(ioopm_hash_function *hash_fn, ioopm_
 /// @param ht a hash table to be deleted
 void ioopm_hash_table_destroy(ioopm_hash_table_t *ht);
 
+/// @brief delete a hash table and free its memory
+/// @param ht a hash table to be deleted
+void ioopm_hash_table_destroy_cart(ioopm_hash_table_t *ht);
+
 /// @brief add key => value entry in hash table ht
 /// @param ht hash table operated upon
 /// @param key key to insert of type elem_t

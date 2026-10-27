@@ -107,6 +107,41 @@ void ioopm_hash_table_destroy(ioopm_hash_table_t *ht)
     free(ht);
 }
 
+// iterative function iterative process
+/// @brief destroys a linked list with nodes entry_t
+/// @param curr list to destroy
+static void destroy_linked_list_cart(entry_t *curr)
+{
+    // free current entry while curr is not NULL
+    while (curr != NULL)
+    {
+        entry_t *new_curr = curr->next;
+        ioopm_hash_table_destroy(curr);
+        curr = new_curr;
+    }
+}
+
+void ioopm_hash_table_destroy_cart(ioopm_hash_table_t *ht)
+{
+    // goes through all buckets of the hash table
+    for (int i = 0; i < No_buckets; i++)
+    {
+        // the current list
+        entry_t *curr_list = ht->buckets[i].next;
+        // continues if current list is empty
+        if (curr_list == NULL)
+        {
+            continue;
+        }
+        // else destroys current list
+        else
+        {
+            destroy_linked_list_cart(curr_list);
+        }
+    }
+    free(ht);
+}
+
 /// @brief creates an entry
 /// @param key key of the entry
 /// @param value value of the entry
