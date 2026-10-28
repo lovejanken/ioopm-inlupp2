@@ -18,15 +18,14 @@ int clean_suite(void) {
   return 0;
 }
 
-void create_destroy_store()
+void test_create_destroy_store()
 {
   store_t *store = ioopm_create_store();
   CU_ASSERT(store != NULL);
   ioopm_destroy_store(store);
-
 }
 
-void add_merch()
+void test_add_merch()
 {
   store_t *store = ioopm_create_store();
 
@@ -35,7 +34,16 @@ void add_merch()
   ioopm_destroy_store(store);
 }
 
-void add_and_remove_merch()
+void test_add_empty_merch()
+{
+  store_t *store = ioopm_create_store();
+
+  CU_ASSERT_FALSE(ioopm_add_merch(store, "", "Gul", 200));
+
+  ioopm_destroy_store(store);
+}
+
+void test_remove_merch()
 {
   store_t *store = ioopm_create_store();
 
@@ -45,7 +53,7 @@ void add_and_remove_merch()
   ioopm_destroy_store(store);
 }
 
-void remove_wrong_merch()
+void test_remove_non_existent_merch()
 {
   store_t *store = ioopm_create_store();
 
@@ -55,7 +63,7 @@ void remove_wrong_merch()
   ioopm_destroy_store(store);
 }
 
-void edit_existing_merch()
+void test_edit_merch()
 {
   store_t *store = ioopm_create_store();
 
@@ -67,7 +75,7 @@ void edit_existing_merch()
   ioopm_destroy_store(store);
 }
 
-void replenish_merch()
+void test_replenish_merch()
 {
   int result;
   store_t *store = ioopm_create_store();
@@ -92,7 +100,7 @@ void replenish_merch()
   ioopm_destroy_store(store);
 }
 
-void create_cart()
+void test_create_cart()
 {
   store_t *store = ioopm_create_store();
   elem_t local;
@@ -103,7 +111,7 @@ void create_cart()
   ioopm_destroy_store(store);
 }
 
-void add_to_cart()
+void test_add_to_cart()
 {
   store_t *store = ioopm_create_store();
 
@@ -119,7 +127,7 @@ void add_to_cart()
   ioopm_destroy_store(store);
 }
 
-void remove_from_cart()
+void test_remove_from_cart()
 {
   store_t *store = ioopm_create_store();
 
@@ -140,7 +148,7 @@ void remove_from_cart()
   ioopm_destroy_store(store);
 }
 
-void calculate_cost()
+void test_calculate_cost()
 {
   store_t *store = ioopm_create_store();
 
@@ -165,7 +173,7 @@ void calculate_cost()
   ioopm_destroy_store(store);
 }
 
-void checkout()
+void test_checkout()
 {
   store_t *store = ioopm_create_store();
 
@@ -218,17 +226,18 @@ int main() {
   }
 
   if (
-    (CU_add_test(my_test_suite, "Check if creating and destroying store works", create_destroy_store) == NULL) ||
-    (CU_add_test(my_test_suite, "Check if adding merch to the store works", add_merch) == NULL) ||
-    (CU_add_test(my_test_suite, "Check if adding merch and removing it works", add_and_remove_merch) == NULL) ||
-    (CU_add_test(my_test_suite, "Check if removing non-existent merch works", remove_wrong_merch) == NULL) ||
-    (CU_add_test(my_test_suite, "Check if editing existant merch works and checking that the old merch is removed", edit_existing_merch) == NULL) ||
-    (CU_add_test(my_test_suite, "Check if replenishing merch works as intended", replenish_merch) == NULL) ||
-    (CU_add_test(my_test_suite, "Check if creating a cart works", create_cart) == NULL) ||
-    (CU_add_test(my_test_suite, "Check if adding to a cart works", add_to_cart) == NULL) ||
-    (CU_add_test(my_test_suite, "Check if removing from a cart works", remove_from_cart) == NULL) ||
-    (CU_add_test(my_test_suite, "Check if calculating cost works", calculate_cost) == NULL) ||
-    (CU_add_test(my_test_suite, "Check if checkout works", checkout) == NULL) ||
+    (CU_add_test(my_test_suite, "Check if creating and destroying store works", test_create_destroy_store) == NULL) ||
+    (CU_add_test(my_test_suite, "Check if adding merch to the store works", test_add_merch) == NULL) ||
+    (CU_add_test(my_test_suite, "Check if adding merch with no name to the store works", test_add_empty_merch) == NULL) ||
+    (CU_add_test(my_test_suite, "Check if removing merch from the store works", test_remove_merch) == NULL) ||
+    (CU_add_test(my_test_suite, "Check if removing non-existent merch works", test_remove_non_existent_merch) == NULL) ||
+    (CU_add_test(my_test_suite, "Check if editing existant merch works and checking that the old merch is removed", test_edit_merch) == NULL) ||
+    (CU_add_test(my_test_suite, "Check if replenishing merch works as intended", test_replenish_merch) == NULL) ||
+    (CU_add_test(my_test_suite, "Check if creating a cart works", test_create_cart) == NULL) ||
+    (CU_add_test(my_test_suite, "Check if adding to a cart works", test_add_to_cart) == NULL) ||
+    (CU_add_test(my_test_suite, "Check if removing from a cart works", test_remove_from_cart) == NULL) ||
+    (CU_add_test(my_test_suite, "Check if calculating cost works", test_calculate_cost) == NULL) ||
+    (CU_add_test(my_test_suite, "Check if checkout works", test_checkout) == NULL) ||
 0
   )
   {
