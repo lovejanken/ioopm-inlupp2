@@ -141,6 +141,11 @@ bool ioopm_add_merch(store_t *store, char *name, char *desc, size_t price)
 
 bool ioopm_list_merch(store_t *store)
 {
+    if (ioopm_hash_table_is_empty(store->merch_table))
+    {
+        return false;
+    }
+    
     ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(store->merch_table);
 
     size_t counter = 0;

@@ -106,14 +106,13 @@ void test_edit_merch()
 
 void test_replenish_merch()
 {
-  size_t result;
   store_t *store = ioopm_create_store();
 
   ioopm_add_merch(store, "Banan", "Gul", 200);
   ioopm_add_merch(store, "Apa", "Brun", 200);
   ioopm_replenish(store, "A12", "Banan", 10);
 
-  int result;
+  size_t result;
   ioopm_get_stock_from_location(store, "Banan", "A12", &result);
 
   CU_ASSERT_EQUAL(result, 10);
@@ -221,7 +220,6 @@ void test_calculate_cost()
 
   size_t cost = 0;
   CU_ASSERT_TRUE(ioopm_calculate_cost(store, 1, &cost));
-  printf("%d\n", cost);
   CU_ASSERT_EQUAL(cost, 30);
   
   ioopm_destroy_store(store);
