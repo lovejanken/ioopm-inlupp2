@@ -6,36 +6,6 @@
 #include "common.h"
 #include <stdlib.h>
 
-struct store {
-    ioopm_hash_table_t *merch_table;
-    ioopm_hash_table_t *stock_by_shelf;
-    ioopm_hash_table_t *carts;
-    int number_of_carts;
-};
-
-struct list
-{
-    node_t *first; // points to the first entry (possibly NULL)
-    node_t *last;  // points to the last entry (possibly NULL)
-    int size;      // holds size of list
-};
-
-static bool string_eq(elem_t key1, elem_t key2)
-{
-  return (strcmp(key1.s, key2.s) == 0);
-}
-
-static size_t string_hash(elem_t key)
-{
-  size_t result = 0;
-  while (*key.s != '\0')
-  {
-    result = result * 31 + ((unsigned char) *key.s);
-    key.s++;
-  }
-  return result;
-}
-
 int init_suite(void) {
   // Change this function if you want to do something *before* you
   // run a test suite
@@ -129,7 +99,7 @@ void create_cart()
 
   ioopm_add_merch(store, "Banan", "Gul", 200);
   ioopm_create_cart(store);
-  CU_ASSERT_TRUE(ioopm_hash_table_lookup(store->carts, int_elem(1), &local));
+  CU_ASSERT_TRUE(ioopm_cart_lookup(store, int_elem(1), &local));
   ioopm_destroy_store(store);
 }
 
@@ -163,7 +133,7 @@ void remove_from_cart()
   elem_t result;
   elem_t cart;
 
-  ioopm_hash_table_lookup(store->carts, int_elem(1), &cart);
+  ioopm_cart_lookup(store, int_elem(1), &cart);
   ioopm_hash_table_lookup(cart.c->items, string_elem("Banan"), &result);
   CU_ASSERT_EQUAL(result.i, 5);
 
@@ -220,7 +190,7 @@ void checkout()
   ioopm_checkout(store, 1);
 
   elem_t Ägg;
-  ioopm_hash_table_lookup(store->merch_table, string_elem("Ägg"), &Ägg);
+  ioopm_merch_lookup(store, string_elem("Ägg"), &Ägg);
 
   ioopm_show_stock(store, "Ägg");
 

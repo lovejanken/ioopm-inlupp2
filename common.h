@@ -22,9 +22,6 @@ typedef struct shelf shelf_t;
 
 typedef struct cart cart_t;
 
-//Varje item i en cart, består av merch och antal i carten
-typedef struct cart_item cart_item_t;
-
 typedef struct hash_table ioopm_hash_table_t;
 
 struct merch

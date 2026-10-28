@@ -5,11 +5,6 @@
 #include "hash_table.h"
 #include "linked_list.h"
 
-/*
-//Lista av alla carts som existerar
-typedef ioopm_list_t cart_list_t;
-*/
-
 typedef struct store store_t;
 
 store_t *ioopm_create_store(void);
@@ -17,6 +12,10 @@ store_t *ioopm_create_store(void);
 void ioopm_destroy_store(store_t *store);
 
 int store_get_size(store_t *store);
+
+bool ioopm_merch_lookup(store_t *store, elem_t key, elem_t *result);
+
+bool ioopm_cart_lookup(store_t *store, elem_t key, elem_t *result);
 
 bool ioopm_add_merch(store_t *store, char *name, char *desc, int price);
 

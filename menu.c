@@ -103,11 +103,6 @@ void remove_merch_question(store_t *store)
     }
 }
 
-static bool always_true(char *string)
-{
-    return true;
-}
-
 void edit_merch_question(store_t *store)
 {
     if (ioopm_merch_is_empty(store))
@@ -122,7 +117,7 @@ void edit_merch_question(store_t *store)
     char *new_description = ask_question_string("What do you want the new description to be?");
     int new_price = ask_question_int("What do you want the new price to be?");
 
-    char *confirmation = ask_question_user_input("[Y/N] Are you sure you want to edit the merch?", always_true);
+    char *confirmation = ask_question_string("[Y/N] Are you sure you want to edit the merch?");
     if (check_yes(confirmation))
     {
         if (!ioopm_edit_merch(store, old_name, new_name, new_description, new_price))
@@ -134,6 +129,11 @@ void edit_merch_question(store_t *store)
         {
         printf("Merch %s has been edited.\n", old_name);
         }
+    }
+
+    else
+    {
+        printf("Merch %s has not been edited.\n", old_name);
     }
 }
 
@@ -192,8 +192,13 @@ void remove_cart_question(store_t *store)
 
         else
         {
-            printf("You have removed the cart with ID: %d\n", cart_id);
+            printf("Cart %d has been removed.\n", cart_id);
         }
+    }
+
+    else
+    {
+        printf("Cart %d has not been removed.\n", cart_id);
     }
 }
 

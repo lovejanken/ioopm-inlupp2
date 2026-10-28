@@ -26,4 +26,5 @@ char *ask_question_user_input(char *question, check_func *func);
 bool check_yes(char *string);
 bool check_no(char *string);
 bool check_is_shelf(char *string);
+bool always_true(char *string);
 #endif

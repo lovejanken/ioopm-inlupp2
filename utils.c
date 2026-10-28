@@ -176,3 +176,8 @@ char *ask_question_user_input(char *question, check_func *func)
 {
     return ask_question(question, func, (convert_func *) strdup).string_value;
 }
+
+bool always_true(char *string)
+{
+    return true;
+}
