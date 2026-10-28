@@ -48,7 +48,7 @@ bool check_answer(char *str)
     }
 
     char *correct_answers = "AaLlDdEeSsPpCcRr+-=OoQq";
-    for (int i = 0; i < strlen(correct_answers); i++)
+    for (size_t i = 0; i < strlen(correct_answers); i++)
     {
         if (str[0] == correct_answers[i]) return true;
     }
@@ -66,7 +66,7 @@ void add_merch_question(store_t *store)
 {
     char *name = ask_question_string("Name of the merchandise: ");
     char *description = ask_question_string("Description of the merchandise: ");
-    int price = ask_question_int("Price of the merchandise: ");
+    size_t price = ask_question_size("Price of the merchandise: ");
     if (!ioopm_add_merch(store, name, description, price))
     {
         printf("Merch %s already exists.\n", name);
@@ -115,7 +115,7 @@ void edit_merch_question(store_t *store)
     char *old_name = ask_question_string("What merchandise do you want to edit?");
     char *new_name = ask_question_string("What do you want the new name to be?");
     char *new_description = ask_question_string("What do you want the new description to be?");
-    int new_price = ask_question_int("What do you want the new price to be?");
+    size_t new_price = ask_question_size("What do you want the new price to be?");
 
     char *confirmation = ask_question_string("[Y/N] Are you sure you want to edit the merch?");
     if (check_yes(confirmation))
@@ -152,7 +152,7 @@ void replenish_question(store_t *store)
     ioopm_list_merch(store);
     char *shelf = ask_question_string("What is the name of the shelf you want to replenish?");
     char *merch_name = ask_question_string("What is the name of the merch you want to replenish?");
-    int quantity = ask_question_int("How many items do you want to add?");
+    size_t quantity = ask_question_size("How many items do you want to add?");
 
     if (check_is_shelf(shelf))
     {
@@ -176,12 +176,12 @@ void replenish_question(store_t *store)
 void create_cart_menu(store_t *store)
 {
     ioopm_create_cart(store);
-    printf("You have created a new cart with ID: %d\n", store_get_size(store));
+    printf("You have created a new cart with ID: %zu\n", store_get_size(store));
 }
 
 void remove_cart_question(store_t *store)
 {
-    int cart_id = ask_question_int("What is the ID of the cart you want to remove?");
+    size_t cart_id = ask_question_size("What is the ID of the cart you want to remove?");
     char *confirmation = ask_question_string("[Y/N] Are you sure you want to remove the cart?");
     if (check_yes(confirmation))
     {
@@ -192,21 +192,21 @@ void remove_cart_question(store_t *store)
 
         else
         {
-            printf("Cart %d has been removed.\n", cart_id);
+            printf("Cart %zu has been removed.\n", cart_id);
         }
     }
 
     else
     {
-        printf("Cart %d has not been removed.\n", cart_id);
+        printf("Cart %zu has not been removed.\n", cart_id);
     }
 }
 
 void add_to_cart_question(store_t *store)
 {
-    int cart_id = ask_question_int("What is the ID of the cart you want to add to?");
+    size_t cart_id = ask_question_size("What is the ID of the cart you want to add to?");
     char *merch_name = ask_question_string("What is the name of the merch you want to add to cart?");
-    int quantity = ask_question_int("How many items do you want to add?");
+    size_t quantity = ask_question_size("How many items do you want to add?");
 
     if (!ioopm_add_to_cart(store, cart_id, merch_name, quantity))
     {
@@ -215,53 +215,53 @@ void add_to_cart_question(store_t *store)
 
     else
     {
-        printf("Added %d of item %s to cart %d\n", quantity, merch_name, cart_id);
+        printf("Added %zu of item %s to cart %zu\n", quantity, merch_name, cart_id);
     }
 }
 
 void remove_from_cart_question(store_t *store)
 {
-    int cart_id = ask_question_int("What is the ID of the cart you want to remove from?");
+    size_t cart_id = ask_question_size("What is the ID of the cart you want to remove from?");
     char *merch_name = ask_question_string("What is the name of the merch you want to remove from cart?");
-    int quantity = ask_question_int("How many items do you want to remove?");
+    size_t quantity = ask_question_size("How many items do you want to remove?");
 
     if (!ioopm_remove_from_cart(store, cart_id, merch_name, quantity))
     {
-        printf("Could not remove item %s from cart %d\n", merch_name, cart_id);
+        printf("Could not remove item %s from cart %zu\n", merch_name, cart_id);
     }
 
     else
     {
-        printf("Removed %d of item %s from cart %d\n", quantity, merch_name, cart_id);
+        printf("Removed %zu of item %s from cart %zu\n", quantity, merch_name, cart_id);
     }
 }
 
 void calculate_cost_question(store_t *store)
 {
-    int cart_id = ask_question_int("What is the ID of the cart you want to calculate the cost of?");
-    int cost = 0;
+    size_t cart_id = ask_question_size("What is the ID of the cart you want to calculate the cost of?");
+    size_t cost = 0;
     if (ioopm_calculate_cost(store, cart_id, &cost))
     {
-        printf("Your total cost is: %d\n", cost);
+        printf("Your total cost is: %zu\n", cost);
     }
 
     else
     {
-        printf("Could not calculate cost of cart ID: %d\n", cart_id);
+        printf("Could not calculate cost of cart ID: %zu\n", cart_id);
     }
 }
 
 void checkout_question(store_t *store)
 {
-        int cart_id = ask_question_int("What is the ID of the cart you want to checkout?");
+        size_t cart_id = ask_question_size("What is the ID of the cart you want to checkout?");
         if (!ioopm_checkout(store, cart_id))
         {
-            printf("Could not checkout cart ID: %d\n", cart_id);
+            printf("Could not checkout cart ID: %zu\n", cart_id);
         }
 
         else
         {
-            printf("Cart %d has been checked out.\n", cart_id);
+            printf("Cart %zu has been checked out.\n", cart_id);
         }
 }
 
@@ -442,7 +442,7 @@ void print_item(item_t *item1)
 {
     int SEK = item1->price / 100;
     int decimal = item1->price % 100;
-    printf("Name: %s\nDesc: %s\nPrice: %d.%d\nShelf: %s\n", item1->name, item1->description, SEK, decimal, item1->shelf);
+    printf("Name: %s\nDesc: %s\nPrice: %zu.%d\nShelf: %s\n", item1->name, item1->description, SEK, decimal, item1->shelf);
 }
 
 void list_db(item_t *items, int no_items)

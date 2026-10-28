@@ -77,7 +77,7 @@ elem_t ioopm_list_get(ioopm_list_t *list, int index);
 /// @brief Lookup the number of elements in the linked list in O(1) time
 /// @param list the linked list
 /// @return the number of elements in the list
-int ioopm_list_size(ioopm_list_t *list);
+size_t ioopm_list_size(ioopm_list_t *list);
 
 /// @brief Test whether a list is empty or not
 /// @param list the linked list

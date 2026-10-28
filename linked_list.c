@@ -19,7 +19,7 @@ struct list
 {
     node_t *first; // points to the first entry (possibly NULL)
     node_t *last;  // points to the last entry (possibly NULL)
-    int size;      // holds size of list
+    size_t size;      // holds size of list
 };
 
 ioopm_list_t *ioopm_list_create(void)
@@ -200,7 +200,7 @@ elem_t ioopm_list_get(ioopm_list_t *list, int index)
     return prev->next->val;
 }
 
-int ioopm_list_size(ioopm_list_t *list)
+size_t ioopm_list_size(ioopm_list_t *list)
 {
     return list->size;
 }

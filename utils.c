@@ -10,7 +10,7 @@ extern char *strdup(const char *);
 
 void print(char *str)
 {
-    int i = 0;
+    size_t i = 0;
     while (str[i] != '\0')
     {
         putchar(str[i]);
@@ -44,6 +44,32 @@ int ask_question_int(char *question)
   return answer.int_value; // svaret som ett heltal
 }
 
+size_t ask_question_size(char *question)
+{
+  answer_t answer = ask_question(question, is_positive, (convert_func *) atoi);
+  return answer.size_value; // svaret som ett heltal
+}
+
+bool is_positive(char *str)
+{
+    if (is_number(str) == false)
+    {
+        return false;
+    }
+
+    else
+    {
+        if (str[0] == '-') {
+            return false;
+        }
+
+        else
+        {
+            return true;
+        }
+    }
+}
+
 bool is_number(char *str)
 {   
     //Basfall
@@ -52,7 +78,7 @@ bool is_number(char *str)
         return false;
     }
 
-    int i = 0;
+    size_t i = 0;
     //Kolla om första tecken är '-' men inte enbart
     if (str[0] == '-' && strlen(str) != 1)
     {
@@ -129,7 +155,7 @@ bool check_yes(char *string)
     char *valid_inputs = "Yy";
     char answer = string[0];
 
-    for (int i = 0; valid_inputs[i] != NULL; i++)
+    for (size_t i = 0; valid_inputs[i] != '\0'; i++)
     {
         if (answer == valid_inputs[i])
         {
@@ -151,7 +177,7 @@ bool check_no(char *string)
     char *valid_inputs = "Nn";
     char answer = string[0];
 
-    for (int i = 0; valid_inputs[i] != NULL; i++)
+    for (size_t i = 0; valid_inputs[i] != '\0'; i++)
     {
         if (answer == valid_inputs[i])
         {

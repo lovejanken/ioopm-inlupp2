@@ -77,7 +77,7 @@ void test_edit_merch()
 
 void test_replenish_merch()
 {
-  int result;
+  size_t result;
   store_t *store = ioopm_create_store();
 
   ioopm_add_merch(store, "Banan", "Gul", 200);
@@ -165,7 +165,7 @@ void test_calculate_cost()
   ioopm_add_to_cart(store, 1, "Ägg", 10);
   ioopm_add_to_cart(store, 1, "Äpple", 10);
 
-  int cost = 0;
+  size_t cost = 0;
   CU_ASSERT_TRUE(ioopm_calculate_cost(store, 1, &cost));
   printf("%d\n", cost);
   CU_ASSERT_EQUAL(cost, 30);
@@ -190,7 +190,7 @@ void test_checkout()
   ioopm_add_to_cart(store, 1, "Banan", 1);  
   ioopm_add_to_cart(store, 1, "Äpple", 10);
 
-  int cost1 = 0;
+  size_t cost1 = 0;
   ioopm_calculate_cost(store, 1, &cost1);
   CU_ASSERT_EQUAL(cost1, 19);
 
@@ -206,7 +206,7 @@ void test_checkout()
   ioopm_add_to_cart(store, 2, "Banan", 1);
   CU_ASSERT_FALSE(ioopm_add_to_cart(store, 2, "Ägg", 5));
   ioopm_add_to_cart(store, 2, "Äpple", 10);
-  int cost2 = 0;
+  size_t cost2 = 0;
   ioopm_calculate_cost(store, 2, &cost2);
   CU_ASSERT_EQUAL(cost2, 11);
 

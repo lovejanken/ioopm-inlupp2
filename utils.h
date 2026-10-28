@@ -7,6 +7,7 @@ typedef union {
   float float_value;
   char *string_value;
   char char_value;
+  size_t size_value;
 } answer_t;
 
 typedef bool check_func(char *str);
@@ -15,8 +16,10 @@ typedef answer_t convert_func(char *str);
 void println(char *str);
 void print(char *str);
 int read_string(char *buf, int buf_siz);
+bool is_positive(char *str);
 bool is_number(char *str);
 int ask_question_int(char *question);
+size_t ask_question_size(char *question);
 char *ask_question_string(char *question);
 void print(char *str);
 void println(char *str);
