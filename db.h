@@ -19,7 +19,7 @@ bool ioopm_cart_lookup(store_t *store, elem_t key, elem_t *result);
 
 bool ioopm_add_merch(store_t *store, char *name, char *desc, size_t price);
 
-void ioopm_list_merch(store_t *store);
+bool ioopm_list_merch(store_t *store);
 
 bool ioopm_remove_merch(store_t *store, char *name);
 

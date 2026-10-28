@@ -139,7 +139,7 @@ bool ioopm_add_merch(store_t *store, char *name, char *desc, size_t price)
     return true;
 }
 
-void ioopm_list_merch(store_t *store)
+bool ioopm_list_merch(store_t *store)
 {
     ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(store->merch_table);
 
@@ -166,7 +166,8 @@ void ioopm_list_merch(store_t *store)
         ioopm_hash_table_iterator_advance(it);
         counter++;
     }
-
+    ioopm_hash_table_iterator_destroy(it);
+    return true;
 }
 
 bool ioopm_remove_merch(store_t *store, char *name)
