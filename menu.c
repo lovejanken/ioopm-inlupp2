@@ -69,7 +69,12 @@ void add_merch_question(store_t *store)
     int price = ask_question_int("Price of the merchandise: ");
     if (!ioopm_add_merch(store, name, description, price))
     {
-        printf("Merch is already added.\n");
+        printf("Merch %s already exists.\n", name);
+    }
+
+    else
+    {
+        printf("Merch %s has been added.\n", name);
     }
 }
 
@@ -88,7 +93,12 @@ void remove_merch_question(store_t *store)
     {
         if (!ioopm_remove_merch(store, merch))
         {
-            printf("Merch does not exist.\n");
+            printf("Merch %s does not exist.\n", merch);
+        }
+
+        else
+        {
+        printf("Merch %s has been removed.\n", merch);
         }
     }
 }
@@ -117,7 +127,12 @@ void edit_merch_question(store_t *store)
     {
         if (!ioopm_edit_merch(store, old_name, new_name, new_description, new_price))
         {
-            printf("Merch to edit does not exist.\n");
+            printf("Could not edit merch %s.\n", old_name);
+        }
+
+        else
+        {
+        printf("Merch %s has been edited.\n", old_name);
         }
     }
 }
@@ -128,7 +143,7 @@ void show_stock_question(store_t *store)
     char *merch = ask_question_string("What merch do you want to see the stock of?");
     if (!ioopm_show_stock(store, merch))
     {
-        printf("The merch doesn't exist.\n");
+        printf("Merch %s does not exist.\n", merch);
     }
 }
 
@@ -145,11 +160,16 @@ void replenish_question(store_t *store)
         {
             printf("Merch either doesn't exist or another merch already occupies that shelf.\n");
         }
+
+        else
+        {
+        printf("Merch %s has been replenished.\n", merch_name);
+        }
     }
 
     else
     {
-        printf("Name of the shelf is not a valid ID.\n");
+        printf("%s is not a valid ID.\n", shelf);
     }
 }
 
@@ -187,6 +207,11 @@ void add_to_cart_question(store_t *store)
     {
         printf("Could not add item %s to cart\n", merch_name);
     }
+
+    else
+    {
+        printf("Added %d of item %s to cart %d\n", quantity, merch_name, cart_id);
+    }
 }
 
 void remove_from_cart_question(store_t *store)
@@ -197,7 +222,12 @@ void remove_from_cart_question(store_t *store)
 
     if (!ioopm_remove_from_cart(store, cart_id, merch_name, quantity))
     {
-        printf("Could not remove item %s from cart\n", merch_name);
+        printf("Could not remove item %s from cart %d\n", merch_name, cart_id);
+    }
+
+    else
+    {
+        printf("Removed %d of item %s from cart %d\n", quantity, merch_name, cart_id);
     }
 }
 
@@ -222,6 +252,11 @@ void checkout_question(store_t *store)
         if (!ioopm_checkout(store, cart_id))
         {
             printf("Could not checkout cart ID: %d\n", cart_id);
+        }
+
+        else
+        {
+            printf("Cart %d has been checked out.\n", cart_id);
         }
 }
 

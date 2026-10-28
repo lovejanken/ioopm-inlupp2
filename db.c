@@ -206,7 +206,7 @@ bool ioopm_remove_merch(store_t *store, char *name)
 bool ioopm_edit_merch(store_t *store, char *old_name, char *new_name, char *new_description, int new_price)
 {
     elem_t local;
-    if (ioopm_hash_table_lookup(store->merch_table, string_elem(new_name), &local))
+    if (ioopm_hash_table_lookup(store->merch_table, string_elem(new_name), &local) && strcmp(old_name, new_name) != 0)
     {
         return false;
     }
