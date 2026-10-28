@@ -138,7 +138,6 @@ void ioopm_hash_table_destroy_cart(ioopm_hash_table_t *ht)
         // else destroys current list
         else
         {
-            printf("HEJHEJ\n");
             destroy_linked_list_cart(curr_list);
         }
     }

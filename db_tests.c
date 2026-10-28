@@ -187,9 +187,11 @@ void calculate_cost()
   ioopm_add_to_cart(store, 1, "Ägg", 10);
   ioopm_add_to_cart(store, 1, "Äpple", 10);
 
-  CU_ASSERT_EQUAL(ioopm_calculate_cost(store, 1), 30);
-
-
+  int cost = 0;
+  CU_ASSERT_TRUE(ioopm_calculate_cost(store, 1, &cost));
+  printf("%d\n", cost);
+  CU_ASSERT_EQUAL(cost, 30);
+  
   ioopm_destroy_store(store);
 }
 
@@ -210,8 +212,9 @@ void checkout()
   ioopm_add_to_cart(store, 1, "Banan", 1);  
   ioopm_add_to_cart(store, 1, "Äpple", 10);
 
-
-  CU_ASSERT_EQUAL(ioopm_calculate_cost(store, 1), 19);
+  int cost1 = 0;
+  ioopm_calculate_cost(store, 1, &cost1);
+  CU_ASSERT_EQUAL(cost1, 19);
 
 
   ioopm_checkout(store, 1);
@@ -225,7 +228,9 @@ void checkout()
   ioopm_add_to_cart(store, 2, "Banan", 1);
   CU_ASSERT_FALSE(ioopm_add_to_cart(store, 2, "Ägg", 5));
   ioopm_add_to_cart(store, 2, "Äpple", 10);
-  CU_ASSERT_EQUAL(ioopm_calculate_cost(store, 2), 11);
+  int cost2 = 0;
+  ioopm_calculate_cost(store, 2, &cost2);
+  CU_ASSERT_EQUAL(cost2, 11);
 
 
   ioopm_destroy_store(store);
