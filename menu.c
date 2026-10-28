@@ -153,6 +153,78 @@ void replenish_question(store_t *store)
     }
 }
 
+void create_cart_menu(store_t *store)
+{
+    ioopm_create_cart(store);
+    printf("You have created a new cart with ID: %d\n", store_get_size(store));
+}
+
+void remove_cart_question(store_t *store)
+{
+    int cart_id = ask_question_int("What is the ID of the cart you want to remove?");
+    char *confirmation = ask_question_string("[Y/N] Are you sure you want to remove the cart?");
+    if (check_yes(confirmation))
+    {
+        if (!ioopm_remove_cart(store, cart_id))
+        {
+            printf("Cart does not exist.\n");
+        }
+
+        else
+        {
+            printf("You have removed the cart with ID: %d\n", cart_id);
+        }
+    }
+}
+
+void add_to_cart_question(store_t *store)
+{
+    int cart_id = ask_question_int("What is the ID of the cart you want to add to?");
+    char *merch_name = ask_question_string("What is the name of the merch you want to add to cart?");
+    int quantity = ask_question_int("How many items do you want to add?");
+
+    if (!ioopm_add_to_cart(store, cart_id, merch_name, quantity))
+    {
+        printf("Could not add item %s to cart\n", merch_name);
+    }
+}
+
+void remove_from_cart_question(store_t *store)
+{
+    int cart_id = ask_question_int("What is the ID of the cart you want to remove from?");
+    char *merch_name = ask_question_string("What is the name of the merch you want to remove from cart?");
+    int quantity = ask_question_int("How many items do you want to remove?");
+
+    if (!ioopm_remove_from_cart(store, cart_id, merch_name, quantity))
+    {
+        printf("Could not remove item %s from cart\n", merch_name);
+    }
+}
+
+void calculate_cost_question(store_t *store)
+{
+    int cart_id = ask_question_int("What is the ID of the cart you want to calculate the cost of?");
+    int cost = 0;
+    if (ioopm_calculate_cost(store, cart_id, &cost))
+    {
+        printf("Your total cost is: %d\n", cost);
+    }
+
+    else
+    {
+        printf("Could not calculate cost of cart ID: %d\n", cart_id);
+    }
+}
+
+void checkout_question(store_t *store)
+{
+        int cart_id = ask_question_int("What is the ID of the cart you want to checkout?");
+        if (!ioopm_checkout(store, cart_id))
+        {
+            printf("Could not checkout cart ID: %d\n", cart_id);
+        }
+}
+
 int event_loop(store_t *store)
 {
     int answer;
@@ -193,7 +265,32 @@ int event_loop(store_t *store)
 
         else if (answer == 'C')
         {
-            cart_t *current_cart = ioopm_create_cart(store);
+            create_cart_menu(store);
+        }
+
+        else if (answer == 'R')
+        {
+            remove_cart_question(store);
+        }
+
+        else if (answer == '+')
+        {
+            add_to_cart_question(store);
+        }
+
+        else if (answer == '-')
+        {
+            remove_from_cart_question(store);
+        }
+
+        else if (answer == '=')
+        {
+            calculate_cost_question(store);
+        }
+
+        else if (answer == 'O')
+        {
+            checkout_question(store);
         }
 
     } while (answer != 'Q');

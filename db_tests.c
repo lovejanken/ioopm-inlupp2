@@ -9,7 +9,8 @@
 struct store {
     ioopm_hash_table_t *merch_table;
     ioopm_hash_table_t *stock_by_shelf;
-    ioopm_list_t *carts;
+    ioopm_hash_table_t *carts;
+    int number_of_carts;
 };
 
 struct list
@@ -124,10 +125,11 @@ void replenish_merch()
 void create_cart()
 {
   store_t *store = ioopm_create_store();
+  elem_t local;
 
   ioopm_add_merch(store, "Banan", "Gul", 200);
   ioopm_create_cart(store);
-  CU_ASSERT(store->carts == NULL);
+  CU_ASSERT_TRUE(ioopm_hash_table_lookup(store->carts, int_elem(1), &local));
   ioopm_destroy_store(store);
 }
 
@@ -138,11 +140,11 @@ void add_to_cart()
   ioopm_add_merch(store, "Banan", "Gul", 200);
   ioopm_replenish(store, "A10", "Banan", 100);
   ioopm_create_cart(store);
-  CU_ASSERT_TRUE(ioopm_add_to_cart(store, cart, "Banan", 10));
+  CU_ASSERT_TRUE(ioopm_add_to_cart(store, 1, "Banan", 10));
 
-  CU_ASSERT_FALSE(ioopm_add_to_cart(store, cart, "Banan", 91));
+  CU_ASSERT_FALSE(ioopm_add_to_cart(store, 1, "Banan", 91));
 
-  CU_ASSERT_TRUE(ioopm_add_to_cart(store, cart, "Banan", 90));
+  CU_ASSERT_TRUE(ioopm_add_to_cart(store, 1, "Banan", 90));
 
   ioopm_destroy_store(store);
 }
@@ -153,14 +155,16 @@ void remove_from_cart()
 
   ioopm_add_merch(store, "Banan", "Gul", 200);
   ioopm_replenish(store, "A10", "Banan", 100);
-  cart_t *cart = ioopm_create_cart(store);
-  CU_ASSERT_TRUE(ioopm_add_to_cart(store, cart, "Banan", 10));
+  ioopm_create_cart(store);
+  CU_ASSERT_TRUE(ioopm_add_to_cart(store, 1, "Banan", 10));
 
-  CU_ASSERT_TRUE(ioopm_remove_from_cart(cart, "Banan", 5));
+  CU_ASSERT_TRUE(ioopm_remove_from_cart(store, 1, "Banan", 5));
 
   elem_t result;
+  elem_t cart;
 
-  ioopm_hash_table_lookup(cart->items, string_elem("Banan"), &result);
+  ioopm_hash_table_lookup(store->carts, int_elem(1), &cart);
+  ioopm_hash_table_lookup(cart.c->items, string_elem("Banan"), &result);
   CU_ASSERT_EQUAL(result.i, 5);
 
   ioopm_destroy_store(store);
@@ -178,12 +182,12 @@ void calculate_cost()
   ioopm_replenish(store, "B20", "Ägg", 5);
   ioopm_replenish(store, "B25", "Ägg", 5);
   ioopm_replenish(store, "C10", "Äpple", 100);
-  cart_t *cart = ioopm_create_cart(store);
-  ioopm_add_to_cart(store, cart, "Banan", 10);
-  ioopm_add_to_cart(store, cart, "Ägg", 10);
-  ioopm_add_to_cart(store, cart, "Äpple", 10);
+  ioopm_create_cart(store);
+  ioopm_add_to_cart(store, 1, "Banan", 10);
+  ioopm_add_to_cart(store, 1, "Ägg", 10);
+  ioopm_add_to_cart(store, 1, "Äpple", 10);
 
-  CU_ASSERT_EQUAL(ioopm_calculate_cost(store, cart), 30);
+  CU_ASSERT_EQUAL(ioopm_calculate_cost(store, 1), 30);
 
 
   ioopm_destroy_store(store);
@@ -201,27 +205,27 @@ void checkout()
   ioopm_replenish(store, "B20", "Ägg", 5);
   ioopm_replenish(store, "B25", "Ägg", 5);
   ioopm_replenish(store, "C10", "Äpple", 100);
-  cart_t *cart = ioopm_create_cart(store);
-  ioopm_add_to_cart(store, cart, "Ägg", 8);
-  ioopm_add_to_cart(store, cart, "Banan", 1);  
-  ioopm_add_to_cart(store, cart, "Äpple", 10);
+  ioopm_create_cart(store);
+  ioopm_add_to_cart(store, 1, "Ägg", 8);
+  ioopm_add_to_cart(store, 1, "Banan", 1);  
+  ioopm_add_to_cart(store, 1, "Äpple", 10);
 
 
-  CU_ASSERT_EQUAL(ioopm_calculate_cost(store, cart), 19);
+  CU_ASSERT_EQUAL(ioopm_calculate_cost(store, 1), 19);
 
 
-  ioopm_checkout(store, cart);
+  ioopm_checkout(store, 1);
 
   elem_t Ägg;
   ioopm_hash_table_lookup(store->merch_table, string_elem("Ägg"), &Ägg);
 
   ioopm_show_stock(store, "Ägg");
 
-  cart_t *cart_2 = ioopm_create_cart(store);
-  ioopm_add_to_cart(store, cart_2, "Banan", 1);
-  CU_ASSERT_FALSE(ioopm_add_to_cart(store, cart_2, "Ägg", 5));
-  ioopm_add_to_cart(store, cart_2, "Äpple", 10);
-  CU_ASSERT_EQUAL(ioopm_calculate_cost(store, cart_2), 11);
+  ioopm_create_cart(store);
+  ioopm_add_to_cart(store, 2, "Banan", 1);
+  CU_ASSERT_FALSE(ioopm_add_to_cart(store, 2, "Ägg", 5));
+  ioopm_add_to_cart(store, 2, "Äpple", 10);
+  CU_ASSERT_EQUAL(ioopm_calculate_cost(store, 2), 11);
 
 
   ioopm_destroy_store(store);
