@@ -18,6 +18,7 @@ void print(char *str);
 int read_string(char *buf, int buf_siz);
 bool is_positive(char *str);
 bool is_number(char *str);
+answer_t versal(char *str);
 int ask_question_int(char *question);
 size_t ask_question_size(char *question);
 char *ask_question_string(char *question);

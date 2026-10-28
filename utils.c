@@ -24,6 +24,13 @@ void println(char *str)
     putchar('\n');
 }
 
+answer_t versal(char *str)
+{
+    answer_t converted;
+    converted.char_value = toupper(str[0]);
+    return converted;
+}
+
 answer_t ask_question(char *question, check_func *check, convert_func *convert)
 {
     int buf_siz = 255;
@@ -69,6 +76,8 @@ bool is_positive(char *str)
         }
     }
 }
+
+
 
 bool is_number(char *str)
 {   

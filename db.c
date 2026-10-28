@@ -145,7 +145,7 @@ bool ioopm_list_merch(store_t *store)
     {
         return false;
     }
-    
+
     ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(store->merch_table);
 
     size_t counter = 0;
@@ -548,7 +548,7 @@ bool ioopm_checkout(store_t *store, size_t cart_id)
 
 }
 
-void quit(store_t *store)
+void ioopm_quit(store_t *store)
 {
     ioopm_destroy_store(store);
     return;

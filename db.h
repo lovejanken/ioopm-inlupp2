@@ -47,4 +47,4 @@ bool ioopm_calculate_cost(store_t *store, size_t cart_id, size_t *result);
 
 bool ioopm_checkout(store_t *store, size_t cart_id);
 
-void ioopm_quit();
+void ioopm_quit(store_t *store);
