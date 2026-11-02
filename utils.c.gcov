@@ -1,0 +1,302 @@
+        -:    0:Source:utils.c
+        -:    1:#include <stdio.h>
+        -:    2:#include <stdlib.h>
+        -:    3:#include <ctype.h>
+        -:    4:#include <math.h>
+        -:    5:#include <string.h>
+        -:    6:#include "utils.h"
+        -:    7:
+        -:    8:
+        -:    9:extern char *strdup(const char *);
+        -:   10:
+function print called 0 returned 0% blocks executed 0%
+    #####:   11:void print(char *str)
+        -:   12:{
+    #####:   13:    size_t i = 0;
+    #####:   14:    while (str[i] != '\0')
+branch  0 never executed
+branch  1 never executed (fallthrough)
+        -:   15:    {
+    #####:   16:        putchar(str[i]);
+call    0 never executed
+    #####:   17:        i++;
+        -:   18:    }
+    #####:   19:}
+        -:   20:
+function println called 0 returned 0% blocks executed 0%
+    #####:   21:void println(char *str)
+        -:   22:{
+    #####:   23:    print(str);
+call    0 never executed
+    #####:   24:    putchar('\n');
+call    0 never executed
+    #####:   25:}
+        -:   26:
+function versal called 0 returned 0% blocks executed 0%
+    #####:   27:answer_t versal(char *str)
+        -:   28:{
+        -:   29:    answer_t converted;
+    #####:   30:    converted.char_value = toupper(str[0]);
+    #####:   31:    return converted;
+        -:   32:}
+        -:   33:
+function ask_question called 0 returned 0% blocks executed 0%
+    #####:   34:answer_t ask_question(char *question, check_func *check, convert_func *convert)
+    #####:   35:{
+    #####:   36:    int buf_siz = 255;
+    #####:   37:    char buf[buf_siz];
+        -:   38:
+        -:   39:    do
+        -:   40:        {
+    #####:   41:            println(question);
+call    0 never executed
+    #####:   42:            read_string(buf, buf_siz);
+call    0 never executed
+    #####:   43:        } while (!check(buf));
+call    0 never executed
+branch  1 never executed (fallthrough)
+branch  2 never executed
+        -:   44:
+    #####:   45:    return convert(buf);
+call    0 never executed
+        -:   46:}
+        -:   47:
+function ask_question_int called 0 returned 0% blocks executed 0%
+    #####:   48:int ask_question_int(char *question)
+        -:   49:{
+    #####:   50:  answer_t answer = ask_question(question, is_number, (convert_func *) atoi);
+call    0 never executed
+    #####:   51:  return answer.int_value; // svaret som ett heltal
+        -:   52:}
+        -:   53:
+function ask_question_size called 0 returned 0% blocks executed 0%
+    #####:   54:size_t ask_question_size(char *question)
+        -:   55:{
+    #####:   56:  answer_t answer = ask_question(question, is_positive, (convert_func *) atoi);
+call    0 never executed
+    #####:   57:  return answer.size_value; // svaret som ett heltal
+        -:   58:}
+        -:   59:
+function is_positive called 0 returned 0% blocks executed 0%
+    #####:   60:bool is_positive(char *str)
+        -:   61:{
+    #####:   62:    if (is_number(str) == false)
+call    0 never executed
+branch  1 never executed (fallthrough)
+branch  2 never executed
+        -:   63:    {
+    #####:   64:        return false;
+        -:   65:    }
+        -:   66:
+        -:   67:    else
+        -:   68:    {
+    #####:   69:        if (str[0] == '-') {
+branch  0 never executed (fallthrough)
+branch  1 never executed
+    #####:   70:            return false;
+        -:   71:        }
+        -:   72:
+        -:   73:        else
+        -:   74:        {
+    #####:   75:            return true;
+        -:   76:        }
+        -:   77:    }
+        -:   78:}
+        -:   79:
+        -:   80:
+        -:   81:
+function is_number called 0 returned 0% blocks executed 0%
+    #####:   82:bool is_number(char *str)
+        -:   83:{   
+        -:   84:    //Basfall
+    #####:   85:    if (strlen(str) < 1)
+branch  0 never executed (fallthrough)
+branch  1 never executed
+        -:   86:    {
+    #####:   87:        return false;
+        -:   88:    }
+        -:   89:
+    #####:   90:    size_t i = 0;
+        -:   91:    //Kolla om första tecken är '-' men inte enbart
+    #####:   92:    if (str[0] == '-' && strlen(str) != 1)
+branch  0 never executed (fallthrough)
+branch  1 never executed
+branch  2 never executed (fallthrough)
+branch  3 never executed
+        -:   93:    {
+    #####:   94:        i++;
+        -:   95:    }
+    #####:   96:    while (i < strlen(str))
+branch  0 never executed
+branch  1 never executed (fallthrough)
+        -:   97:    {
+    #####:   98:        if (isdigit(str[i]) == false)
+branch  0 never executed (fallthrough)
+branch  1 never executed
+        -:   99:        {
+    #####:  100:            return false;
+        -:  101:        }
+        -:  102:
+        -:  103:        else
+        -:  104:        {
+    #####:  105:            i++;
+        -:  106:        }
+        -:  107:    }
+        -:  108:
+    #####:  109:    return true;
+        -:  110:
+        -:  111:}
+        -:  112:
+function not_empty called 0 returned 0% blocks executed 0%
+    #####:  113:bool not_empty(char *str)
+        -:  114:{
+    #####:  115:  return strlen(str) > 0;
+        -:  116:}
+        -:  117:
+function read_string called 0 returned 0% blocks executed 0%
+    #####:  118:int read_string(char *buf, int buf_size)
+        -:  119:{
+        -:  120:    int c;
+        -:  121:
+    #####:  122:    int counter = 0;
+    #####:  123:    while (counter < buf_size - 1)
+branch  0 never executed
+branch  1 never executed (fallthrough)
+        -:  124:    {
+    #####:  125:        c = getchar();
+call    0 never executed
+        -:  126:
+    #####:  127:        if (c == '\n' || c == EOF)
+branch  0 never executed (fallthrough)
+branch  1 never executed
+branch  2 never executed (fallthrough)
+branch  3 never executed
+        -:  128:        {
+        -:  129:            break;
+        -:  130:        }
+        -:  131:
+    #####:  132:        buf[counter] = c;
+    #####:  133:        counter++;
+        -:  134:    }
+        -:  135:
+    #####:  136:    if (c != '\n' && c != EOF)
+branch  0 never executed (fallthrough)
+branch  1 never executed
+branch  2 never executed (fallthrough)
+branch  3 never executed
+        -:  137:    {
+        -:  138:        do
+        -:  139:                {
+    #####:  140:                    c = getchar();
+call    0 never executed
+        -:  141:                }
+    #####:  142:            while (c != '\n' && c != EOF);
+branch  0 never executed (fallthrough)
+branch  1 never executed
+branch  2 never executed (fallthrough)
+branch  3 never executed
+    #####:  143:            putchar('\n');
+call    0 never executed
+        -:  144:            
+        -:  145:    }
+        -:  146:
+    #####:  147:    buf[counter] = '\0';
+        -:  148:
+    #####:  149:    return counter;
+        -:  150:}
+        -:  151:
+function ask_question_string called 0 returned 0% blocks executed 0%
+    #####:  152:char *ask_question_string(char *question)
+        -:  153:{
+    #####:  154:  return ask_question(question, not_empty, (convert_func *) strdup).string_value;
+call    0 never executed
+        -:  155:}
+        -:  156:
+function check_yes called 0 returned 0% blocks executed 0%
+    #####:  157:bool check_yes(char *string)
+        -:  158:{
+    #####:  159:    if (strlen(string) < 1)
+branch  0 never executed (fallthrough)
+branch  1 never executed
+        -:  160:    {
+    #####:  161:        return false;
+        -:  162:    }
+        -:  163:
+    #####:  164:    char *valid_inputs = "Yy";
+    #####:  165:    char answer = string[0];
+        -:  166:
+    #####:  167:    for (size_t i = 0; valid_inputs[i] != '\0'; i++)
+branch  0 never executed
+branch  1 never executed (fallthrough)
+        -:  168:    {
+    #####:  169:        if (answer == valid_inputs[i])
+branch  0 never executed (fallthrough)
+branch  1 never executed
+        -:  170:        {
+    #####:  171:            return true;
+        -:  172:        }
+        -:  173:    }
+        -:  174:
+    #####:  175:    return false;
+        -:  176:
+        -:  177:}
+        -:  178:
+function check_no called 0 returned 0% blocks executed 0%
+    #####:  179:bool check_no(char *string)
+        -:  180:{
+    #####:  181:    if (strlen(string) < 1)
+branch  0 never executed (fallthrough)
+branch  1 never executed
+        -:  182:    {
+    #####:  183:        return false;
+        -:  184:    }
+        -:  185:
+    #####:  186:    char *valid_inputs = "Nn";
+    #####:  187:    char answer = string[0];
+        -:  188:
+    #####:  189:    for (size_t i = 0; valid_inputs[i] != '\0'; i++)
+branch  0 never executed
+branch  1 never executed (fallthrough)
+        -:  190:    {
+    #####:  191:        if (answer == valid_inputs[i])
+branch  0 never executed (fallthrough)
+branch  1 never executed
+        -:  192:        {
+    #####:  193:            return true;
+        -:  194:        }
+        -:  195:    }
+        -:  196:
+    #####:  197:    return false;
+        -:  198:
+        -:  199:}
+        -:  200:
+function check_is_shelf called 0 returned 0% blocks executed 0%
+    #####:  201:bool check_is_shelf(char *string)
+        -:  202:{
+    #####:  203:    if (strlen(string) != 3 || !isalpha(string[0]) || !isdigit(string[1]) || !isdigit(string[2]))
+branch  0 never executed (fallthrough)
+branch  1 never executed
+branch  2 never executed (fallthrough)
+branch  3 never executed
+branch  4 never executed (fallthrough)
+branch  5 never executed
+branch  6 never executed (fallthrough)
+branch  7 never executed
+        -:  204:    {
+    #####:  205:        return false;
+        -:  206:    }
+    #####:  207:    return true;
+        -:  208:}
+        -:  209:
+function ask_question_user_input called 0 returned 0% blocks executed 0%
+    #####:  210:char *ask_question_user_input(char *question, check_func *func)
+        -:  211:{
+    #####:  212:    return ask_question(question, func, (convert_func *) strdup).string_value;
+call    0 never executed
+        -:  213:}
+        -:  214:
+function always_true called 0 returned 0% blocks executed 0%
+    #####:  215:bool always_true(char *string)
+        -:  216:{
+    #####:  217:    return true;
+        -:  218:}

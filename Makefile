@@ -7,6 +7,10 @@ LIST_OBJS = linked_list.o
 
 HEADERS = $(wildcard *.h)
 
+run:
+	gcc menu.c utils.c db.c hash_table.c linked_list.c -o menu_program -Wall -Wextra -g
+	./menu_program
+
 %.o: %.c $(HEADERS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
@@ -16,6 +20,7 @@ test_db: db_tests.o db.o utils.o $(HASH_OBJS) $(LIST_OBJS)
 
 db: db.o utils.o $(HASH_OBJS) $(LIST_OBJS)
 	$(CC) $^ -o $@ $(CUNIT)
+
 
 TESTS = test_db
 
@@ -38,7 +43,7 @@ cov_db: db_tests.cov.o db.cov.o utils.cov.o $(HASH_COV_OBJS) $(LIST_COV_OBJS)
 coverage: cov_db
 	rm -f *.gcda
 	./cov_db
-	gcov -b hash_table.cov.gcda linked_list.cov.gcda db.cov.gcda utils.cov.gcda
+	gcov -b db.cov.gcda
 
 clean:
 	rm -f *.o test_db \
