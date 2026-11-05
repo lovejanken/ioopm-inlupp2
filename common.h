@@ -28,20 +28,20 @@ struct merch
 {
     char *name;
     char *description;
-    int price;
+    size_t price;
     ioopm_list_t *locs;
 };
 
 struct shelf
 {
     char *shelf;
-    int quantity;
+    size_t quantity;
 };
 
 struct cart
 {
     ioopm_hash_table_t *items;
-    int id;
+    size_t id;
 };
 
 typedef union elem elem_t;

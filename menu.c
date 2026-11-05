@@ -1,17 +1,7 @@
 #include <stdio.h>
-#include <stdbool.h>
 #include <string.h>
 #include "utils.h"
-#include <ctype.h>
-#include <math.h>
-#include <time.h>
-#include <stdlib.h>
-#include "linked_list.h"
-#include "hash_table.h"
-#include "list_iterator.h"
-#include "common.h"
 #include "db.h"
-#include "hash_table_iterator.h"
 
 
 void print_menu()

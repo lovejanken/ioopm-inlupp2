@@ -1,10 +1,6 @@
 #include <stdio.h>
-#include <stdbool.h>
 #include <string.h>
 #include "utils.h"
-#include <ctype.h>
-#include <math.h>
-#include <time.h>
 #include <stdlib.h>
 #include "linked_list.h"
 #include "hash_table.h"
