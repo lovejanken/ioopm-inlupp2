@@ -10,23 +10,25 @@
 #include "hash_table_iterator.h"
 
 struct store {
-    ioopm_hash_table_t *merch_table;
-    ioopm_hash_table_t *stock_by_shelf;
-    ioopm_hash_table_t *carts;
-    size_t number_of_carts;
+    ioopm_hash_table_t *merch_table;    // hash table containing every merch available in the store, with name as key
+    ioopm_hash_table_t *stock_by_shelf; // hash table of all the shelfs in the store, with shelf as key
+    ioopm_hash_table_t *carts;          // hash table of all the carts created in the store, with cart_id as key
+    size_t number_of_carts;             // the total amount of carts in the store, including removed
 };
 
 store_t *ioopm_create_store(void)
 {
     store_t *store = malloc(sizeof(store_t));
-    store->carts = ioopm_hash_table_create(ioopm_hash_int, ioopm_int_comp);
     store->merch_table = ioopm_hash_table_create(ioopm_hash_string, ioopm_string_comp);
     store->stock_by_shelf = ioopm_hash_table_create(ioopm_hash_string, ioopm_string_comp);
+    store->carts = ioopm_hash_table_create(ioopm_hash_int, ioopm_int_comp);
     store->number_of_carts = 0;
 
     return store;
 }
 
+/// @brief Destroys a cart and frees all memory concerning it
+/// @param cart the cart to destroy
 static void destroy_cart(cart_t *cart)
 {
     if (cart == NULL)
@@ -38,11 +40,15 @@ static void destroy_cart(cart_t *cart)
     free(cart);
 }
 
+/// @brief Destroys all carts in the store and frees all memory concerning it
+/// @param store the store to use
 static void destroy_all_carts(store_t *store)
 {
    ioopm_hash_table_destroy_cart(store->carts);
 }
 
+/// @brief Destroys a merch and frees all memory concerning it
+/// @param merch the merch to destroy
 static void destroy_merch_data(merch_t merch)
 {
     if (merch.locs != NULL) {
@@ -58,6 +64,8 @@ static void destroy_merch_data(merch_t merch)
     free(merch.description);
 }
 
+/// @brief Destroys all merch in the store and frees all memory concerning it
+/// @param store the store to use
 static void destroy_all_merch(store_t *store)
 {
     ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(store->merch_table);
@@ -355,6 +363,10 @@ bool ioopm_cart_lookup(store_t *store, elem_t key, elem_t *result)
     return ioopm_hash_table_lookup(store->carts, key, result);
 }
 
+/// @brief Sum of all the stock of merch named merch_name
+/// @param store the store to use
+/// @param merch_name name of merch to use
+/// @return sum of all stock of the merch
 static size_t sum_stock_of_merch(store_t *store, char *merch_name)
 {
     elem_t merch = int_elem(-1);
@@ -376,6 +388,10 @@ static size_t sum_stock_of_merch(store_t *store, char *merch_name)
     return total_stock;
 }
 
+/// @brief Sum of all the stock of merch named merch_name, across all carts
+/// @param store the store to use
+/// @param merch_name name of merch to use
+/// @return sum of all stock of the merch in all carts in the store
 static size_t sum_merch_stock_of_carts(store_t *store, char *merch_name)
 {
     ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(store->carts);
@@ -477,6 +493,10 @@ bool ioopm_calculate_cost(store_t *store, size_t cart_id, size_t *result)
     return true;
 }
 
+/// @brief Removes amount of stocked merch named merch_name from the store
+/// @param store the store to use
+/// @param merch_name name of merch to use
+/// @param amount the amount of merch to remove
 static void remove_stock_from_available(store_t *store, char *merch_name, size_t amount)
 {
     elem_t current_merch = int_elem(-1);
@@ -491,13 +511,11 @@ static void remove_stock_from_available(store_t *store, char *merch_name, size_t
     while (local_amount > 0 && counter < list_size)
     {
         shelf_t shelf = ioopm_list_get(locations, counter).sh;
-        //printf("SHELF NAME: %s\n", shelf.shelf);
         quantity = shelf.quantity;
 
         if (local_amount >= quantity)
         {
             local_amount = local_amount - quantity;
-            //printf("LOCAL AMOUNT: %d\n", local_amount);
             ioopm_hash_table_remove(store->stock_by_shelf, string_elem(shelf.shelf), &local);
             ioopm_list_remove(locations, counter);
             free(shelf.shelf);
@@ -506,7 +524,6 @@ static void remove_stock_from_available(store_t *store, char *merch_name, size_t
         else
         {
             shelf.quantity = shelf.quantity - local_amount;
-            //printf("SHELF QUANTITY: %d\n", shelf.quantity);
             local_amount = 0;
             ioopm_list_append(locations, shelf_elem(shelf));
             ioopm_list_remove(locations, counter);

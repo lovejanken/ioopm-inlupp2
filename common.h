@@ -25,22 +25,22 @@ typedef struct hash_table ioopm_hash_table_t;
 
 struct merch
 {
-    char *name;
-    char *description;
-    size_t price;
-    ioopm_list_t *locs;
+    char *name;         // name of the merch
+    char *description;  // description of the merch
+    size_t price;       // price of the merch
+    ioopm_list_t *locs; // list of shelf_t, all locations the merch is stored in
 };
 
 struct shelf
 {
-    char *shelf;
-    size_t quantity;
+    char *shelf;     // name of the shelf
+    size_t quantity; // the amount of stock stored on the shelf
 };
 
 struct cart
 {
-    ioopm_hash_table_t *items;
-    size_t id;
+    ioopm_hash_table_t *items; // hash table containing all the merch in the cart
+    size_t id;                 // id of the cart
 };
 
 typedef union elem elem_t;
