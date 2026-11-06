@@ -79,7 +79,7 @@ typedef bool print_outcome_func_zsz(store_t *store, size_t siz1, char *str, size
 static void print_outcome_zsz(print_outcome_func_zsz *func, store_t *store, size_t siz1, char *str, size_t siz2, char *if_true, char *if_false)
 {
     if (!func(store, siz1, str, siz2)) {
-        printf(if_false, str, siz2);
+        printf(if_false, str, siz1);
     } else {
         printf(if_true, siz2, str, siz1);
     }

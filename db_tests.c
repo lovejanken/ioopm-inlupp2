@@ -139,7 +139,7 @@ void test_replenish_merch()
 
   ioopm_add_merch(store, "Banan", "Gul", 200);
   ioopm_add_merch(store, "Apa", "Brun", 200);
-  ioopm_replenish(store, "A12", "Banan", 10);
+  ioopm_replenish(store, "Banan", "A12", 10);
 
   size_t result;
   get_stock_from_location(store, "Banan", "A12", &result);
@@ -162,9 +162,9 @@ void test_show_stock()
   store_t *store = ioopm_create_store();
 
   ioopm_add_merch(store, "Banan", "Gul", 200);
-  ioopm_replenish(store, "A12", "Banan", 10);
-  ioopm_replenish(store, "A34", "Banan", 40);
-  ioopm_replenish(store, "C34", "Banan", 150);
+  ioopm_replenish(store, "Banan", "A12", 10);
+  ioopm_replenish(store, "Banan", "A34", 40);
+  ioopm_replenish(store, "Banan", "C34", 150);
 
   CU_ASSERT_TRUE(ioopm_show_stock(store, "Banan"));
 
@@ -198,7 +198,7 @@ void test_add_to_cart()
   store_t *store = ioopm_create_store();
 
   ioopm_add_merch(store, "Banan", "Gul", 200);
-  ioopm_replenish(store, "A10", "Banan", 100);
+  ioopm_replenish(store, "Banan", "A10", 100);
   ioopm_create_cart(store);
   CU_ASSERT_TRUE(ioopm_add_to_cart(store, 1, "Banan", 10));
 
@@ -214,7 +214,7 @@ void test_remove_from_cart()
   store_t *store = ioopm_create_store();
 
   ioopm_add_merch(store, "Banan", "Gul", 200);
-  ioopm_replenish(store, "A10", "Banan", 100);
+  ioopm_replenish(store, "Banan", "A10", 100);
   ioopm_create_cart(store);
   CU_ASSERT_TRUE(ioopm_add_to_cart(store, 1, "Banan", 10));
 
@@ -237,11 +237,11 @@ void test_calculate_cost()
   ioopm_add_merch(store, "Banan", "Gul", 1);
   ioopm_add_merch(store, "Ägg", "Vitt", 1);
   ioopm_add_merch(store, "Äpple", "Grönt", 1);
-  ioopm_replenish(store, "A10", "Banan", 5);
-  ioopm_replenish(store, "A10", "Banan", 5);
-  ioopm_replenish(store, "B20", "Ägg", 5);
-  ioopm_replenish(store, "B25", "Ägg", 5);
-  ioopm_replenish(store, "C10", "Äpple", 100);
+  ioopm_replenish(store, "Banan", "A10", 5);
+  ioopm_replenish(store, "Banan", "A10", 5);
+  ioopm_replenish(store, "Ägg", "B20", 5);
+  ioopm_replenish(store, "Ägg", "B25", 5);
+  ioopm_replenish(store, "Äpple", "C10", 100);
   ioopm_create_cart(store);
   ioopm_add_to_cart(store, 1, "Banan", 10);
   ioopm_add_to_cart(store, 1, "Ägg", 10);
@@ -261,11 +261,11 @@ void test_checkout()
   ioopm_add_merch(store, "Banan", "Gul", 1);
   ioopm_add_merch(store, "Ägg", "Vitt", 1);
   ioopm_add_merch(store, "Äpple", "Grönt", 1);
-  ioopm_replenish(store, "A10", "Banan", 5);
-  ioopm_replenish(store, "A10", "Banan", 5);
-  ioopm_replenish(store, "B20", "Ägg", 5);
-  ioopm_replenish(store, "B25", "Ägg", 5);
-  ioopm_replenish(store, "C10", "Äpple", 100);
+  ioopm_replenish(store, "Banan", "A10", 5);
+  ioopm_replenish(store, "Banan", "A10", 5);
+  ioopm_replenish(store, "Ägg", "B20", 5);
+  ioopm_replenish(store, "Ägg", "B25", 5);
+  ioopm_replenish(store, "Äpple", "C10", 100);
   ioopm_create_cart(store);
   ioopm_add_to_cart(store, 1, "Ägg", 8);
   ioopm_add_to_cart(store, 1, "Banan", 1);  
