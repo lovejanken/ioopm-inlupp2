@@ -69,9 +69,9 @@ typedef bool print_outcome_func_zz(store_t *store, size_t siz1, size_t *siz2);
 static void print_outcome_zz(print_outcome_func_zz *func, store_t *store, size_t siz1, size_t siz2, char *if_true, char *if_false)
 {
     if (!func(store, siz1, &siz2)) {
-        printf(if_false, siz2);
+        printf(if_false, siz1);
     } else {
-        printf(if_true, siz1);
+        printf(if_true, siz2);
     }
 }
 
@@ -247,8 +247,8 @@ void ioopm_calculate_cost_menu(store_t *store)
 {
     size_t cart_id = ask_question_size("What is the ID of the cart you want to calculate the cost of?");
     size_t cost = 0;
-    char *if_true = "Could not calculate cost of cart ID: %zu\n";
-    char *if_false = "Your total cost is: %zu\n";
+    char *if_false = "Could not calculate cost of cart ID: %zu\n";
+    char *if_true = "Your total cost is: %zu\n";
     print_outcome_zz(ioopm_calculate_cost, store, cart_id, cost, if_true, if_false);
 }
 

@@ -179,8 +179,64 @@ bool ioopm_remove_merch(store_t *store, char *name)
     return true;
 }
 
+/// @brief Sum of all the stock of merch named merch_name
+/// @param store the store to use
+/// @param merch_name name of merch to use
+/// @return sum of all stock of the merch
+static size_t sum_stock_of_merch(store_t *store, char *merch_name)
+{
+    elem_t merch = int_elem(-1);
+    ioopm_merch_lookup(store, string_elem(merch_name), &merch);
+
+    ioopm_list_t *list = merch.m.locs;
+    ioopm_list_iterator_t *it = ioopm_list_iterator_create(list);
+
+    size_t total_stock = 0;
+
+    while (!ioopm_list_iterator_at_end(it))
+    {
+        total_stock += ioopm_list_iterator_current(it).sh.quantity;
+        ioopm_list_iterator_advance(it);
+    }
+
+    ioopm_list_iterator_destroy(it);
+
+    return total_stock;
+}
+
+/// @brief Sum of all the stock of merch named merch_name, across all carts
+/// @param store the store to use
+/// @param merch_name name of merch to use
+/// @return sum of all stock of the merch in all carts in the store
+static size_t sum_merch_stock_of_carts(store_t *store, char *merch_name)
+{
+    ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(store->carts);
+    cart_t *current_cart;
+    size_t total_sum = 0;
+    elem_t current_amount = int_elem(0);
+
+    while (!ioopm_hash_table_iterator_at_end(it))
+    {
+        current_cart = ioopm_hash_table_iterator_current_value(it).c;
+        if (ioopm_hash_table_lookup(current_cart->items, string_elem(merch_name), &current_amount))
+        {
+            total_sum += current_amount.i;
+        }
+        ioopm_hash_table_iterator_advance(it);
+        
+    }
+    ioopm_hash_table_iterator_destroy(it);
+
+    return total_sum;
+}
+
 bool ioopm_edit_merch(store_t *store, char *old_name, char *new_name, char *new_description, size_t new_price)
 {
+    if (sum_merch_stock_of_carts(store, old_name) > 0)
+    {
+        return false;
+    }
+
     elem_t local;
     if (ioopm_merch_lookup(store, string_elem(new_name), &local) && strcmp(old_name, new_name) != 0)
     {
@@ -243,7 +299,7 @@ bool ioopm_show_stock(store_t *store, char *merch_name)
     else return false;
 }
 
-bool ioopm_replenish(store_t *store, char *location, char *merch_name, size_t amount)
+bool ioopm_replenish(store_t *store, char *merch_name, char *location, size_t amount)
 {
     if (amount < 1) return false;
     size_t counter = 0;
@@ -331,57 +387,6 @@ bool ioopm_remove_cart(store_t *store, size_t cart_id)
 bool ioopm_cart_lookup(store_t *store, elem_t key, elem_t *result)
 {
     return ioopm_hash_table_lookup(store->carts, key, result);
-}
-
-/// @brief Sum of all the stock of merch named merch_name
-/// @param store the store to use
-/// @param merch_name name of merch to use
-/// @return sum of all stock of the merch
-static size_t sum_stock_of_merch(store_t *store, char *merch_name)
-{
-    elem_t merch = int_elem(-1);
-    ioopm_merch_lookup(store, string_elem(merch_name), &merch);
-
-    ioopm_list_t *list = merch.m.locs;
-    ioopm_list_iterator_t *it = ioopm_list_iterator_create(list);
-
-    size_t total_stock = 0;
-
-    while (!ioopm_list_iterator_at_end(it))
-    {
-        total_stock += ioopm_list_iterator_current(it).sh.quantity;
-        ioopm_list_iterator_advance(it);
-    }
-
-    ioopm_list_iterator_destroy(it);
-
-    return total_stock;
-}
-
-/// @brief Sum of all the stock of merch named merch_name, across all carts
-/// @param store the store to use
-/// @param merch_name name of merch to use
-/// @return sum of all stock of the merch in all carts in the store
-static size_t sum_merch_stock_of_carts(store_t *store, char *merch_name)
-{
-    ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(store->carts);
-    cart_t *current_cart;
-    size_t total_sum = 0;
-    elem_t current_amount = int_elem(0);
-
-    while (!ioopm_hash_table_iterator_at_end(it))
-    {
-        current_cart = ioopm_hash_table_iterator_current_value(it).c;
-        if (ioopm_hash_table_lookup(current_cart->items, string_elem(merch_name), &current_amount))
-        {
-            total_sum += current_amount.i;
-        }
-        ioopm_hash_table_iterator_advance(it);
-        
-    }
-    ioopm_hash_table_iterator_destroy(it);
-
-    return total_sum;
 }
 
 bool ioopm_add_to_cart(store_t *store, size_t cart_id, char *merch_name, size_t amount)

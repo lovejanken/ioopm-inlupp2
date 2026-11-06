@@ -77,7 +77,7 @@ bool ioopm_show_stock(store_t *store, char *merch_name);
 /// @param merch_name name of merch to replenish
 /// @param amount the amount to replenish
 /// @return true if it succeeds, otherwise false
-bool ioopm_replenish(store_t *store, char *location, char *merch_name, size_t amount);
+bool ioopm_replenish(store_t *store, char *merch_name, char *location, size_t amount);
 
 /// @brief Checks if there are any merch in the store
 /// @param store the store to use
