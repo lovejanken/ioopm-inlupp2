@@ -1,10 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <math.h>
 #include <string.h>
 #include "utils.h"
-
 
 extern char *strdup(const char *);
 
@@ -31,6 +29,39 @@ answer_t versal(char *str)
     return converted;
 }
 
+int read_string(char *buf, int buf_size)
+{
+    int c;
+
+    int counter = 0;
+    while (counter < buf_size - 1)
+    {
+        c = getchar();
+
+        if (c == '\n' || c == EOF)
+        {
+            break;
+        }
+
+        buf[counter] = c;
+        counter++;
+    }
+
+    if (c != '\n' && c != EOF)
+    {
+        do
+        {
+            c = getchar();
+        }
+        while (c != '\n' && c != EOF);
+        putchar('\n');    
+    }
+
+    buf[counter] = '\0';
+
+    return counter;
+}
+
 answer_t ask_question(char *question, check_func *check, convert_func *convert)
 {
     int buf_siz = 255;
@@ -44,40 +75,6 @@ answer_t ask_question(char *question, check_func *check, convert_func *convert)
 
     return convert(buf);
 }
-
-int ask_question_int(char *question)
-{
-  answer_t answer = ask_question(question, is_number, (convert_func *) atoi);
-  return answer.int_value; // svaret som ett heltal
-}
-
-size_t ask_question_size(char *question)
-{
-  answer_t answer = ask_question(question, is_positive, (convert_func *) atoi);
-  return answer.size_value; // svaret som ett heltal
-}
-
-bool is_positive(char *str)
-{
-    if (is_number(str) == false)
-    {
-        return false;
-    }
-
-    else
-    {
-        if (str[0] == '-') {
-            return false;
-        }
-
-        else
-        {
-            return true;
-        }
-    }
-}
-
-
 
 bool is_number(char *str)
 {   
@@ -107,112 +104,86 @@ bool is_number(char *str)
     }
 
     return true;
-
 }
 
-bool not_empty(char *str)
+int ask_question_int(char *question)
+{
+  answer_t answer = ask_question(question, is_number, (convert_func *) atoi);
+  return answer.int_value; // svaret som ett heltal
+}
+
+bool is_positive(char *str)
+{
+    if (is_number(str) == false)
+    {
+        return false;
+    }
+
+    else
+    {
+        if (str[0] == '-') {
+            return false;
+        }
+
+        else
+        {
+            return true;
+        }
+    }
+}
+
+size_t ask_question_size(char *question)
+{
+  answer_t answer = ask_question(question, is_positive, (convert_func *) atoi);
+  return answer.size_value; // svaret som ett heltal
+}
+
+bool is_not_empty(char *str)
 {
   return strlen(str) > 0;
 }
 
-int read_string(char *buf, int buf_size)
-{
-    int c;
-
-    int counter = 0;
-    while (counter < buf_size - 1)
-    {
-        c = getchar();
-
-        if (c == '\n' || c == EOF)
-        {
-            break;
-        }
-
-        buf[counter] = c;
-        counter++;
-    }
-
-    if (c != '\n' && c != EOF)
-    {
-        do
-                {
-                    c = getchar();
-                }
-            while (c != '\n' && c != EOF);
-            putchar('\n');
-            
-    }
-
-    buf[counter] = '\0';
-
-    return counter;
-}
-
 char *ask_question_string(char *question)
 {
-  return ask_question(question, not_empty, (convert_func *) strdup).string_value;
+  return ask_question(question, is_not_empty, (convert_func *) strdup).string_value;
+}
+
+bool check_valid_input(char *string, char *valid_inputs)
+{
+    if (strlen(string) < 1)
+    {
+        return false;
+    }
+
+    char answer = string[0];
+
+    for (size_t i = 0; valid_inputs[i] != '\0'; i++)
+    {
+        if (answer == valid_inputs[i])
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 bool check_yes(char *string)
 {
-    if (strlen(string) < 1)
-    {
-        return false;
-    }
-
-    char *valid_inputs = "Yy";
-    char answer = string[0];
-
-    for (size_t i = 0; valid_inputs[i] != '\0'; i++)
-    {
-        if (answer == valid_inputs[i])
-        {
-            return true;
-        }
-    }
-
-    return false;
-
+    return check_valid_input(string, "Yy");
 }
 
 bool check_no(char *string)
 {
-    if (strlen(string) < 1)
-    {
-        return false;
-    }
-
-    char *valid_inputs = "Nn";
-    char answer = string[0];
-
-    for (size_t i = 0; valid_inputs[i] != '\0'; i++)
-    {
-        if (answer == valid_inputs[i])
-        {
-            return true;
-        }
-    }
-
-    return false;
-
+    return check_valid_input(string, "Nn");
 }
 
-bool check_is_shelf(char *string)
+bool always_true(char *string)
 {
-    if (strlen(string) != 3 || !isalpha(string[0]) || !isdigit(string[1]) || !isdigit(string[2]))
-    {
-        return false;
-    }
     return true;
 }
 
 char *ask_question_user_input(char *question, check_func *func)
 {
     return ask_question(question, func, (convert_func *) strdup).string_value;
-}
-
-bool always_true(char *string)
-{
-    return true;
 }

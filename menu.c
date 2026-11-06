@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include "utils.h"
 #include "db.h"
 
-
-void print_menu()
+void ioopm_print_menu()
 {
     printf(
         "[A] Add Merchandise\n"
@@ -23,7 +23,7 @@ void print_menu()
     );
 }
 
-bool check_answer(char *str)
+static bool check_answer(char *str)
 {
     if (strlen(str) != 1)
     {
@@ -39,29 +39,83 @@ bool check_answer(char *str)
     return false;
 }
 
-char ask_question_menu(char *question)
+char ioopm_ask_question_menu(char *question)
 {
     answer_t answer = ask_question(question, check_answer, versal);
     return answer.char_value;
 }
 
-void add_merch_question(store_t *store)
+typedef bool print_outcome_func_s(store_t *store, char *str);
+static void print_outcome_s(print_outcome_func_s *func, store_t *store, char *str, char *if_true, char *if_false)
+{
+    if (!func(store, str)) {
+        printf(if_false, str);
+    } else {
+        printf(if_true, str);
+    }
+}
+
+typedef bool print_outcome_func_z(store_t *store, size_t siz);
+static void print_outcome_z(print_outcome_func_z *func, store_t *store, size_t siz, char *if_true, char *if_false)
+{
+    if (!func(store, siz)) {
+        printf(if_false, siz);
+    } else {
+        printf(if_true, siz);
+    }
+}
+
+typedef bool print_outcome_func_zz(store_t *store, size_t siz1, size_t *siz2);
+static void print_outcome_zz(print_outcome_func_zz *func, store_t *store, size_t siz1, size_t siz2, char *if_true, char *if_false)
+{
+    if (!func(store, siz1, &siz2)) {
+        printf(if_false, siz2);
+    } else {
+        printf(if_true, siz1);
+    }
+}
+
+typedef bool print_outcome_func_zsz(store_t *store, size_t siz1, char *str, size_t siz2);
+static void print_outcome_zsz(print_outcome_func_zsz *func, store_t *store, size_t siz1, char *str, size_t siz2, char *if_true, char *if_false)
+{
+    if (!func(store, siz1, str, siz2)) {
+        printf(if_false, str, siz2);
+    } else {
+        printf(if_true, siz2, str, siz1);
+    }
+}
+
+typedef bool print_outcome_func_ssz(store_t *store, char *str1, char *str2, size_t siz);
+static void print_outcome_ssz(print_outcome_func_ssz *func, store_t *store, char *str1, char *str2, size_t siz, char *if_true, char *if_false)
+{
+    if (!func(store, str1, str2, siz)) {
+        printf(if_false, str1);
+    } else {
+        printf(if_true, str1);
+    }
+}
+
+typedef bool print_outcome_func_sssz(store_t *store, char *str1, char *str2, char *str3, size_t siz);
+static void print_outcome_sssz(print_outcome_func_sssz *func, store_t *store, char *str1, char *str2, char *str3, size_t siz, char *if_true, char *if_false)
+{
+    if (!func(store, str1, str2, str3, siz)) {
+        printf(if_false, str1);
+    } else {
+        printf(if_true, str1);
+    }
+}
+
+void ioopm_add_merch_menu(store_t *store)
 {
     char *name = ask_question_string("Name of the merchandise: ");
     char *description = ask_question_string("Description of the merchandise: ");
     size_t price = ask_question_size("Price of the merchandise: ");
-    if (!ioopm_add_merch(store, name, description, price))
-    {
-        printf("Merch %s already exists.\n", name);
-    }
-
-    else
-    {
-        printf("Merch %s has been added.\n", name);
-    }
+    char *if_true = "Merch %s has been added.\n";
+    char *if_false = "Merch %s already exists.\n";
+    print_outcome_ssz(ioopm_add_merch, store, name, description, price, if_true, if_false);
 }
 
-void remove_merch_question(store_t *store)
+void ioopm_remove_merch_menu(store_t *store)
 {
     if (ioopm_merch_is_empty(store))
     {
@@ -74,19 +128,13 @@ void remove_merch_question(store_t *store)
     char *confirmation = ask_question_string("[Y/N] Are you sure you want to remove the merch?");
     if (check_yes(confirmation))
     {
-        if (!ioopm_remove_merch(store, merch))
-        {
-            printf("Merch %s does not exist.\n", merch);
-        }
-
-        else
-        {
-        printf("Merch %s has been removed.\n", merch);
-        }
+        char *if_true = "Merch %s has been removed.\n";
+        char *if_false = "Merch %s does not exist.\n";
+        print_outcome_s(ioopm_remove_merch, store, merch, if_true, if_false);
     }
 }
 
-void edit_merch_question(store_t *store)
+void ioopm_edit_merch_menu(store_t *store)
 {
     if (ioopm_merch_is_empty(store))
     {
@@ -103,15 +151,9 @@ void edit_merch_question(store_t *store)
     char *confirmation = ask_question_string("[Y/N] Are you sure you want to edit the merch?");
     if (check_yes(confirmation))
     {
-        if (!ioopm_edit_merch(store, old_name, new_name, new_description, new_price))
-        {
-            printf("Could not edit merch %s.\n", old_name);
-        }
-
-        else
-        {
-        printf("Merch %s has been edited.\n", old_name);
-        }
+        char *if_true = "Merch %s has been edited.\n";
+        char *if_false = "Could not edit merch %s.\n";
+        print_outcome_sssz(ioopm_edit_merch, store, old_name, new_name, new_description, new_price, if_true, if_false);
     }
 
     else
@@ -120,17 +162,25 @@ void edit_merch_question(store_t *store)
     }
 }
 
-void show_stock_question(store_t *store)
+void ioopm_show_stock_menu(store_t *store)
 {
     ioopm_list_merch(store);
     char *merch = ask_question_string("What merch do you want to see the stock of?");
-    if (!ioopm_show_stock(store, merch))
-    {
-        printf("Merch %s does not exist.\n", merch);
-    }
+    char *if_true = "";
+    char *if_false = "Merch %s does not exist.\n";
+    print_outcome_s(ioopm_show_stock, store, merch, if_true, if_false);
 }
 
-void replenish_question(store_t *store)
+static bool check_is_shelf(char *string)
+{
+    if (strlen(string) != 3 || !isalpha(string[0]) || !isdigit(string[1]) || !isdigit(string[2]))
+    {
+        return false;
+    }
+    return true;
+}
+
+void ioopm_replenish_menu(store_t *store)
 {
     ioopm_list_merch(store);
     char *shelf = ask_question_string("What is the name of the shelf you want to replenish?");
@@ -139,15 +189,9 @@ void replenish_question(store_t *store)
 
     if (check_is_shelf(shelf))
     {
-        if (!ioopm_replenish(store, shelf, merch_name, quantity))
-        {
-            printf("Merch either doesn't exist or another merch already occupies that shelf.\n");
-        }
-
-        else
-        {
-        printf("Merch %s has been replenished.\n", merch_name);
-        }
+        char *if_true = "Merch %s has been replenished.\n";
+        char *if_false = "Merch either doesn't exist or another merch already occupies that shelf.\n";
+        print_outcome_ssz(ioopm_replenish, store, merch_name, shelf, quantity, if_true, if_false);
     }
 
     else
@@ -156,27 +200,21 @@ void replenish_question(store_t *store)
     }
 }
 
-void create_cart_menu(store_t *store)
+void ioopm_create_cart_menu(store_t *store)
 {
     ioopm_create_cart(store);
-    printf("You have created a new cart with ID: %zu\n", store_get_size(store));
+    printf("You have created a new cart with ID: %zu\n", ioopm_store_get_size(store));
 }
 
-void remove_cart_question(store_t *store)
+void ioopm_remove_cart_menu(store_t *store)
 {
     size_t cart_id = ask_question_size("What is the ID of the cart you want to remove?");
     char *confirmation = ask_question_string("[Y/N] Are you sure you want to remove the cart?");
     if (check_yes(confirmation))
     {
-        if (!ioopm_remove_cart(store, cart_id))
-        {
-            printf("Cart does not exist.\n");
-        }
-
-        else
-        {
-            printf("Cart %zu has been removed.\n", cart_id);
-        }
+        char *if_true = "Cart %zu has been removed.\n";
+        char *if_false = "Cart does not exist.\n";
+        print_outcome_z(ioopm_remove_cart, store, cart_id, if_true, if_false);
     }
 
     else
@@ -185,70 +223,44 @@ void remove_cart_question(store_t *store)
     }
 }
 
-void add_to_cart_question(store_t *store)
+void ioopm_add_to_cart_menu(store_t *store)
 {
     size_t cart_id = ask_question_size("What is the ID of the cart you want to add to?");
     char *merch_name = ask_question_string("What is the name of the merch you want to add to cart?");
     size_t quantity = ask_question_size("How many items do you want to add?");
-
-    if (!ioopm_add_to_cart(store, cart_id, merch_name, quantity))
-    {
-        printf("Could not add item %s to cart\n", merch_name);
-    }
-
-    else
-    {
-        printf("Added %zu of item %s to cart %zu\n", quantity, merch_name, cart_id);
-    }
+    char *if_true = "Added %zu of item %s to cart %zu\n";
+    char *if_false = "Could not add item %s to cart %zu\n";
+    print_outcome_zsz(ioopm_add_to_cart, store, cart_id, merch_name, quantity, if_true, if_false);
 }
 
-void remove_from_cart_question(store_t *store)
+void ioopm_remove_from_cart_menu(store_t *store)
 {
     size_t cart_id = ask_question_size("What is the ID of the cart you want to remove from?");
     char *merch_name = ask_question_string("What is the name of the merch you want to remove from cart?");
     size_t quantity = ask_question_size("How many items do you want to remove?");
-
-    if (!ioopm_remove_from_cart(store, cart_id, merch_name, quantity))
-    {
-        printf("Could not remove item %s from cart %zu\n", merch_name, cart_id);
-    }
-
-    else
-    {
-        printf("Removed %zu of item %s from cart %zu\n", quantity, merch_name, cart_id);
-    }
+    char *if_true = "Removed %zu of item %s from cart %zu\n";
+    char *if_false = "Could not remove item %s from cart %zu\n";
+    print_outcome_zsz(ioopm_remove_from_cart, store, cart_id, merch_name, quantity, if_true, if_false);
 }
 
-void calculate_cost_question(store_t *store)
+void ioopm_calculate_cost_menu(store_t *store)
 {
     size_t cart_id = ask_question_size("What is the ID of the cart you want to calculate the cost of?");
     size_t cost = 0;
-    if (ioopm_calculate_cost(store, cart_id, &cost))
-    {
-        printf("Your total cost is: %zu\n", cost);
-    }
-
-    else
-    {
-        printf("Could not calculate cost of cart ID: %zu\n", cart_id);
-    }
+    char *if_true = "Could not calculate cost of cart ID: %zu\n";
+    char *if_false = "Your total cost is: %zu\n";
+    print_outcome_zz(ioopm_calculate_cost, store, cart_id, cost, if_true, if_false);
 }
 
-void checkout_question(store_t *store)
+void ioopm_checkout_menu(store_t *store)
 {
-        size_t cart_id = ask_question_size("What is the ID of the cart you want to checkout?");
-        if (!ioopm_checkout(store, cart_id))
-        {
-            printf("Could not checkout cart ID: %zu\n", cart_id);
-        }
-
-        else
-        {
-            printf("Cart %zu has been checked out.\n", cart_id);
-        }
+    size_t cart_id = ask_question_size("What is the ID of the cart you want to checkout?");
+    char *if_true = "Cart %zu has been checked out.\n";
+    char *if_false = "Could not checkout cart ID: %zu\n";
+    print_outcome_z(ioopm_checkout, store, cart_id, if_true, if_false);
 }
 
-bool quit_menu(store_t *store)
+bool ioopm_quit_menu(store_t *store)
 {
     char *confirmation = ask_question_string("[Y/N] Are you sure you want to quit?");
     if (check_yes(confirmation))
@@ -259,19 +271,19 @@ bool quit_menu(store_t *store)
     return true;
 }
 
-int event_loop(store_t *store)
+int ioopm_event_loop(store_t *store)
 {
     int answer;
     bool continue_shopping = true;
     while (continue_shopping)
     {
-        print_menu();
+        ioopm_print_menu();
 
-        answer = ask_question_menu("What do you want to do?: ");
+        answer = ioopm_ask_question_menu("What do you want to do?: ");
 
         if (answer == 'A')
         {
-            add_merch_question(store);
+            ioopm_add_merch_menu(store);
         }
 
         else if (answer == 'L')
@@ -281,59 +293,58 @@ int event_loop(store_t *store)
 
         else if (answer == 'D')
         {
-            remove_merch_question(store);
+            ioopm_remove_merch_menu(store);
         }
 
         else if (answer == 'E')
         {
-            edit_merch_question(store);
+            ioopm_edit_merch_menu(store);
         }
 
         else if (answer == 'S')
         {
-            show_stock_question(store);
+            ioopm_show_stock_menu(store);
         }
 
         else if (answer == 'P')
         {
-            replenish_question(store);
+            ioopm_replenish_menu(store);
         }
 
         else if (answer == 'C')
         {
-            create_cart_menu(store);
+            ioopm_create_cart_menu(store);
         }
 
         else if (answer == 'R')
         {
-            remove_cart_question(store);
+            ioopm_remove_cart_menu(store);
         }
 
         else if (answer == '+')
         {
-            add_to_cart_question(store);
+            ioopm_add_to_cart_menu(store);
         }
 
         else if (answer == '-')
         {
-            remove_from_cart_question(store);
+            ioopm_remove_from_cart_menu(store);
         }
 
         else if (answer == '=')
         {
-            calculate_cost_question(store);
+            ioopm_calculate_cost_menu(store);
         }
 
         else if (answer == 'O')
         {
-            checkout_question(store);
+            ioopm_checkout_menu(store);
         }
 
         else if (answer == 'Q')
         {
-            continue_shopping = quit_menu(store);
+            continue_shopping = ioopm_quit_menu(store);
         }
-
     }
 
     return 0;
@@ -342,5 +353,5 @@ int event_loop(store_t *store)
 int main(void)
 {
     store_t *store = ioopm_create_store();
-    event_loop(store);
+    ioopm_event_loop(store);
 }

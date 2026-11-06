@@ -1,18 +1,17 @@
 #pragma once
-#include <stdbool.h>
 #include <stddef.h>
 
 /**
  * @file common.h
- * @author Elis Filén, Alexander Thoresson
- * @date 01 Oct 2026
- * @brief contanis types common to most other files
+ * @author Elis Filén, Love Jonasson Ankén, Alexander Thoresson
+ * @date 12 Oct 2026
+ * @brief contanis several structs, a union with macros, and two typedefined functions.
  *
+ * The structs merch_t, shelf_t, and cart_t are used in our database.
+ * The structs are placed here in order to use them in the union elem_t.
  * elem_t is a union that is used for our hash tables and linked lists.
  * The function types are used when creating a hash table.
- * 
  */
-
 
 typedef struct merch merch_t;
 
