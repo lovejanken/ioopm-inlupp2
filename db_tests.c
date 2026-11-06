@@ -4,7 +4,6 @@
 #include "linked_list.h"
 #include "db.h"
 #include "common.h"
-#include <stdlib.h>
 
 int init_suite(void) {
   // Change this function if you want to do something *before* you
@@ -16,6 +15,36 @@ int clean_suite(void) {
   // Change this function if you want to do something *after* you
   // run a test suite
   return 0;
+}
+
+static bool get_stock_from_location(store_t *store, char *merch_name, char *location, size_t *result)
+{
+    elem_t merch = int_elem(-1);
+    if (!ioopm_merch_lookup(store, string_elem(merch_name), &merch))
+    {
+        return false;
+    }
+
+    ioopm_list_t *list = merch.m.locs;
+    ioopm_list_iterator_t *it = ioopm_list_iterator_create(list);
+
+    while (!ioopm_list_iterator_at_end(it))
+    {
+        shelf_t shelf = ioopm_list_iterator_current(it).sh;
+        if (strcmp(shelf.shelf, location) == 0)
+        {
+            *result = shelf.quantity;
+
+            ioopm_list_iterator_destroy(it);
+            return true;
+        }
+        ioopm_list_iterator_advance(it);
+    }
+
+    ioopm_list_iterator_destroy(it);
+
+    return false;
+    
 }
 
 void test_create_destroy_store()
@@ -113,17 +142,17 @@ void test_replenish_merch()
   ioopm_replenish(store, "A12", "Banan", 10);
 
   size_t result;
-  ioopm_get_stock_from_location(store, "Banan", "A12", &result);
+  get_stock_from_location(store, "Banan", "A12", &result);
 
   CU_ASSERT_EQUAL(result, 10);
 
   ioopm_edit_merch(store, "Banan", "Äpple", "Grön", 200);
 
-  ioopm_get_stock_from_location(store, "Äpple", "A12", &result);
+  get_stock_from_location(store, "Äpple", "A12", &result);
 
   CU_ASSERT_EQUAL(result, 10);
 
-  CU_ASSERT_FALSE(ioopm_get_stock_from_location(store, "Äpple", "A15", &result));
+  CU_ASSERT_FALSE(get_stock_from_location(store, "Äpple", "A15", &result));
 
   ioopm_destroy_store(store);
 }

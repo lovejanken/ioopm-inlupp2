@@ -1,7 +1,5 @@
 #pragma once
-#include <stdbool.h>
 #include "common.h"
-#include "linked_list.h"
 
 /**
  * @file list_iterator.h

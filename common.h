@@ -10,7 +10,7 @@
  * The structs merch_t, shelf_t, and cart_t are used in our database.
  * The structs are placed here in order to use them in the union elem_t.
  * elem_t is a union that is used for our hash tables and linked lists.
- * The function types are used when creating a hash table.
+ * The function types are used when creating a hash table. 
  */
 
 typedef struct merch merch_t;

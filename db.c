@@ -306,36 +306,6 @@ bool ioopm_merch_is_empty(store_t *store)
     return ioopm_hash_table_is_empty(store->merch_table);
 }
 
-bool ioopm_get_stock_from_location(store_t *store, char *merch_name, char *location, size_t *result)
-{
-    elem_t merch = int_elem(-1);
-    if (!ioopm_merch_lookup(store, string_elem(merch_name), &merch))
-    {
-        return false;
-    }
-
-    ioopm_list_t *list = merch.m.locs;
-    ioopm_list_iterator_t *it = ioopm_list_iterator_create(list);
-
-    while (!ioopm_list_iterator_at_end(it))
-    {
-        shelf_t shelf = ioopm_list_iterator_current(it).sh;
-        if (strcmp(shelf.shelf, location) == 0)
-        {
-            *result = shelf.quantity;
-
-            ioopm_list_iterator_destroy(it);
-            return true;
-        }
-        ioopm_list_iterator_advance(it);
-    }
-
-    ioopm_list_iterator_destroy(it);
-
-    return false;
-    
-}
-
 void ioopm_create_cart(store_t *store)
 {
     cart_t *new_cart = malloc(sizeof(cart_t));

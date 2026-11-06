@@ -17,6 +17,8 @@ Runs the menu, allowing use of all implemented functions.
 
 # Design decisions
 
+The hash table and linked list implementation comes from Alexander's assignment 1 (that includes `common.h`). The `utils.c` comes from Love's bootstrap labs.
+
 The database uses the struct `store_t` to store data. `store_t` contains `merch_table`, `stock_by_shelf`, `carts` and `number_of_carts`.
 
 `merch_table` is defined as a hash table that uses the name of the merch as a key and the merch item (`merch_t`) as value. If a merch is edited, the old merch gets removed and the new edited one is inserted into the hash table. This way the updated merch gets a new key, incase the name is changed.
@@ -36,10 +38,14 @@ Hash tables are used to keep the database time efficient. In most cases we are a
 # Test coverage
 
 File 'db.c'
-Lines executed:88.81% of 268
-Branches executed:97.78% of 90
-Taken at least once:74.44% of 90
-Calls executed:92.74% of 124
+Lines executed:88.89% of 252
+Branches executed:97.67% of 86
+Taken at least once:73.26% of 86
+Calls executed:93.10% of 116
 Creating 'db.c.gcov'
 
-Lines executed:88.81% of 268
+Lines executed:88.89% of 252
+
+# Shortcuts and known issues
+
+FIXME: `ioopm_list_merch` does not currently print the merch in alphabetical order. This can be fixed to improve useability of the program.

@@ -84,14 +84,6 @@ bool ioopm_replenish(store_t *store, char *location, char *merch_name, size_t am
 /// @return true if the store does not contain any merch, otherwise false
 bool ioopm_merch_is_empty(store_t *store);
 
-/// @brief Gets the stock of merch named merch_name in location, stored in result
-/// @param store the store to use
-/// @param merch_name the name of merch to get stock of
-/// @param location the location to get the stock from
-/// @param result recieves number corresponding to the amount of the stock in location
-/// @return true if it succeeds, otherwise false
-bool ioopm_get_stock_from_location(store_t *store, char *merch_name, char *location, size_t *result);
-
 /// @brief Allocates memory to a cart_t and initialize it
 /// @param store the store to use
 void ioopm_create_cart(store_t *store);
