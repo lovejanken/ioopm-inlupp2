@@ -68,10 +68,10 @@ answer_t ask_question(char *question, check_func *check, convert_func *convert)
     char buf[buf_siz];
 
     do
-        {
-            println(question);
-            read_string(buf, buf_siz);
-        } while (!check(buf));
+    {
+        println(question);
+        read_string(buf, buf_siz);
+    } while (!check(buf));
 
     return convert(buf);
 }
