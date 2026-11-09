@@ -81,6 +81,56 @@ static void destroy_all_merch(store_t *store)
     ioopm_hash_table_iterator_destroy(it);
 }
 
+/// @brief Sum of all the stock of merch named merch_name
+/// @param store the store to use
+/// @param merch_name name of merch to use
+/// @return sum of all stock of the merch
+static size_t sum_stock_of_merch(store_t *store, char *merch_name)
+{
+    elem_t merch = int_elem(-1);
+    ioopm_merch_lookup(store, string_elem(merch_name), &merch);
+
+    ioopm_list_t *list = merch.m.locs;
+    ioopm_list_iterator_t *it = ioopm_list_iterator_create(list);
+
+    size_t total_stock = 0;
+
+    while (!ioopm_list_iterator_at_end(it))
+    {
+        total_stock += ioopm_list_iterator_current(it).sh.quantity;
+        ioopm_list_iterator_advance(it);
+    }
+
+    ioopm_list_iterator_destroy(it);
+
+    return total_stock;
+}
+
+/// @brief Sum of all the stock of merch named merch_name, across all carts
+/// @param store the store to use
+/// @param merch_name name of merch to use
+/// @return sum of all stock of the merch in all carts in the store
+static size_t sum_merch_stock_of_carts(store_t *store, char *merch_name)
+{
+    ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(store->carts);
+    cart_t *current_cart = NULL;
+    size_t total_sum = 0;
+    elem_t current_amount = int_elem(0);
+
+    while (!ioopm_hash_table_iterator_at_end(it))
+    {
+        current_cart = ioopm_hash_table_iterator_current_value(it).c;
+        if (ioopm_hash_table_lookup(current_cart->items, string_elem(merch_name), &current_amount))
+        {
+            total_sum += current_amount.i;
+        }
+        ioopm_hash_table_iterator_advance(it);
+        
+    }
+    ioopm_hash_table_iterator_destroy(it);
+    return total_sum;
+}
+
 void ioopm_destroy_store(store_t *store)
 {
     destroy_all_carts(store);
@@ -165,6 +215,11 @@ bool ioopm_remove_merch(store_t *store, char *name)
 {
     elem_t merch;
     elem_t local;
+    if (sum_merch_stock_of_carts(store, name) > 0)
+    {
+        return false;
+    }
+
     if (!ioopm_hash_table_remove(store->merch_table, string_elem(name), &merch))
     {
         return false;
@@ -178,58 +233,6 @@ bool ioopm_remove_merch(store_t *store, char *name)
 
     destroy_merch_data(merch.m);
     return true;
-}
-
-/// @brief Sum of all the stock of merch named merch_name
-/// @param store the store to use
-/// @param merch_name name of merch to use
-/// @return sum of all stock of the merch
-static size_t sum_stock_of_merch(store_t *store, char *merch_name)
-{
-    elem_t merch = int_elem(-1);
-    ioopm_merch_lookup(store, string_elem(merch_name), &merch);
-
-    ioopm_list_t *list = merch.m.locs;
-    ioopm_list_iterator_t *it = ioopm_list_iterator_create(list);
-
-    size_t total_stock = 0;
-
-    while (!ioopm_list_iterator_at_end(it))
-    {
-        total_stock += ioopm_list_iterator_current(it).sh.quantity;
-        ioopm_list_iterator_advance(it);
-    }
-
-    ioopm_list_iterator_destroy(it);
-
-    return total_stock;
-}
-
-/// @brief Sum of all the stock of merch named merch_name, across all carts
-/// @param store the store to use
-/// @param merch_name name of merch to use
-/// @return sum of all stock of the merch in all carts in the store
-static size_t sum_merch_stock_of_carts(store_t *store, char *merch_name)
-{
-    ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(store->carts);
-    cart_t *current_cart = NULL;
-    size_t total_sum = 0;
-    elem_t current_amount = int_elem(0);
-
-    while (!ioopm_hash_table_iterator_at_end(it))
-    {
-        current_cart = ioopm_hash_table_iterator_current_value(it).c;
-        if (ioopm_hash_table_lookup(current_cart->items, string_elem(merch_name), &current_amount))
-        {
-            total_sum += current_amount.i;
-        }
-        ioopm_hash_table_iterator_advance(it);
-        
-    }
-    ioopm_hash_table_iterator_destroy(it);
-
-    printf("ANTAL ITEMS: %zu\n", total_sum);
-    return total_sum;
 }
 
 bool ioopm_edit_merch(store_t *store, char *old_name, char *new_name, char *new_description, size_t new_price)
@@ -256,11 +259,8 @@ bool ioopm_edit_merch(store_t *store, char *old_name, char *new_name, char *new_
         .locs = old_merch.m.locs
     };
 
-    printf("KOMMER HIT\n");
-
     if (ioopm_hash_table_remove(store->merch_table, string_elem(old_name), &local))
     {
-        printf("KOMMER HIT OCKSÅ\n");
         ioopm_hash_table_insert(store->merch_table, string_elem(edited_merch.name), merch_elem(edited_merch));
 
         for (size_t i = 0; i < ioopm_list_size(edited_merch.locs); i++)
@@ -431,17 +431,12 @@ bool ioopm_remove_from_cart(store_t *store, size_t cart_id, char *merch_name, si
     elem_t elem_amount = int_elem(0);
     elem_t cart;
     elem_t merch;
-    if (!ioopm_hash_table_lookup(store->merch_table, string_elem(merch_name), &merch));
-    {
-        return false;
-    }
-
-    if (!ioopm_cart_lookup(store, int_elem(cart_id), &cart))
+    if (!ioopm_hash_table_lookup(store->merch_table, string_elem(merch_name), &merch) || !ioopm_cart_lookup(store, int_elem(cart_id), &cart))
     {
         return false;
     }
     
-    else if (ioopm_hash_table_remove(cart.c->items, string_elem(merch_name), &elem_amount))
+    if (ioopm_hash_table_remove(cart.c->items, string_elem(merch_name), &elem_amount))
     {
         size_t current_amount = elem_amount.i;
         if (current_amount > amount)
