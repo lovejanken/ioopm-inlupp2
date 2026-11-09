@@ -2,6 +2,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "utils.h"
+#include <stdlib.h>
 #include "db.h"
 
 void ioopm_print_menu()
@@ -113,6 +114,8 @@ void ioopm_add_merch_menu(store_t *store)
     char *if_true = "Merch %s has been added.\n";
     char *if_false = "Merch %s already exists.\n";
     print_outcome_ssz(ioopm_add_merch, store, name, description, price, if_true, if_false);
+    free(name);
+    free(description);
 }
 
 void ioopm_remove_merch_menu(store_t *store)
@@ -132,6 +135,8 @@ void ioopm_remove_merch_menu(store_t *store)
         char *if_false = "Merch %s does not exist.\n";
         print_outcome_s(ioopm_remove_merch, store, merch, if_true, if_false);
     }
+    free(merch);
+    free(confirmation);
 }
 
 void ioopm_edit_merch_menu(store_t *store)
@@ -160,6 +165,10 @@ void ioopm_edit_merch_menu(store_t *store)
     {
         printf("Merch %s has not been edited.\n", old_name);
     }
+    free(old_name);
+    free(new_name);
+    free(new_description);
+    free(confirmation);
 }
 
 void ioopm_show_stock_menu(store_t *store)
@@ -169,6 +178,7 @@ void ioopm_show_stock_menu(store_t *store)
     char *if_true = "";
     char *if_false = "Merch %s does not exist.\n";
     print_outcome_s(ioopm_show_stock, store, merch, if_true, if_false);
+    free(merch);
 }
 
 static bool check_is_shelf(char *string)
@@ -198,6 +208,8 @@ void ioopm_replenish_menu(store_t *store)
     {
         printf("%s is not a valid ID.\n", shelf);
     }
+    free(shelf);
+    free(merch_name);
 }
 
 void ioopm_create_cart_menu(store_t *store)
@@ -221,6 +233,8 @@ void ioopm_remove_cart_menu(store_t *store)
     {
         printf("Cart %zu has not been removed.\n", cart_id);
     }
+
+    free(confirmation);
 }
 
 void ioopm_add_to_cart_menu(store_t *store)
@@ -231,6 +245,8 @@ void ioopm_add_to_cart_menu(store_t *store)
     char *if_true = "Added %zu of item %s to cart %zu\n";
     char *if_false = "Could not add item %s to cart %zu\n";
     print_outcome_zsz(ioopm_add_to_cart, store, cart_id, merch_name, quantity, if_true, if_false);
+
+    free(merch_name);
 }
 
 void ioopm_remove_from_cart_menu(store_t *store)
@@ -241,6 +257,7 @@ void ioopm_remove_from_cart_menu(store_t *store)
     char *if_true = "Removed %zu of item %s from cart %zu\n";
     char *if_false = "Could not remove item %s from cart %zu\n";
     print_outcome_zsz(ioopm_remove_from_cart, store, cart_id, merch_name, quantity, if_true, if_false);
+    free(merch_name);
 }
 
 void ioopm_calculate_cost_menu(store_t *store)
@@ -266,8 +283,10 @@ bool ioopm_quit_menu(store_t *store)
     if (check_yes(confirmation))
     {
         ioopm_quit(store);
+        free(confirmation);
         return false;
     }
+    free(confirmation);
     return true;
 }
 
