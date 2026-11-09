@@ -1,6 +1,7 @@
 #pragma once
 #include <stddef.h>
 #include "common.h"
+#include <stdbool.h>
 
 /**
  * @file db.h

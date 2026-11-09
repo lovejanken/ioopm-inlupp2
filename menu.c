@@ -4,6 +4,7 @@
 #include "utils.h"
 #include <stdlib.h>
 #include "db.h"
+#include <stdbool.h>
 
 void ioopm_print_menu()
 {
@@ -156,15 +157,22 @@ void ioopm_edit_merch_menu(store_t *store)
     char *confirmation = ask_question_string("[Y/N] Are you sure you want to edit the merch?");
     if (check_yes(confirmation))
     {
-        char *if_true = "Merch %s has been edited.\n";
-        char *if_false = "Could not edit merch %s.\n";
-        print_outcome_sssz(ioopm_edit_merch, store, old_name, new_name, new_description, new_price, if_true, if_false);
+        if (ioopm_edit_merch(store, old_name, new_name, new_description, new_price))
+        {
+            printf("Merch has been edited.");
+        }
+
+        else
+        {
+            printf("Merch has not been edited.");
+        }
     }
 
     else
     {
         printf("Merch %s has not been edited.\n", old_name);
     }
+
     free(old_name);
     free(new_name);
     free(new_description);
@@ -244,7 +252,7 @@ void ioopm_add_to_cart_menu(store_t *store)
     size_t quantity = ask_question_size("How many items do you want to add?");
     char *if_true = "Added %zu of item %s to cart %zu\n";
     char *if_false = "Could not add item %s to cart %zu\n";
-    print_outcome_zsz(ioopm_add_to_cart, store, cart_id, merch_name, quantity, if_true, if_false);
+    print_outcome_zsz(ioopm_add_to_cart, store, cart_id, strdup(merch_name), quantity, if_true, if_false);
 
     free(merch_name);
 }

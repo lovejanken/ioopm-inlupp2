@@ -8,6 +8,7 @@
 #include "common.h"
 #include "db.h"
 #include "hash_table_iterator.h"
+#include <stdbool.h>
 
 struct store {
     ioopm_hash_table_t *merch_table;    // hash table containing every merch available in the store, with name as key
@@ -120,7 +121,7 @@ bool ioopm_add_merch(store_t *store, char *name, char *desc, size_t price)
         .locs = ioopm_list_create()
     };
 
-    ioopm_hash_table_insert(store->merch_table, string_elem(name), merch_elem(new_item));
+    ioopm_hash_table_insert(store->merch_table, merch_elem(new_item.name), merch_elem(new_item));
     return true;
 }
 
@@ -211,7 +212,7 @@ static size_t sum_stock_of_merch(store_t *store, char *merch_name)
 static size_t sum_merch_stock_of_carts(store_t *store, char *merch_name)
 {
     ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(store->carts);
-    cart_t *current_cart;
+    cart_t *current_cart = NULL;
     size_t total_sum = 0;
     elem_t current_amount = int_elem(0);
 
@@ -227,6 +228,7 @@ static size_t sum_merch_stock_of_carts(store_t *store, char *merch_name)
     }
     ioopm_hash_table_iterator_destroy(it);
 
+    printf("ANTAL ITEMS: %zu\n", total_sum);
     return total_sum;
 }
 
@@ -254,9 +256,12 @@ bool ioopm_edit_merch(store_t *store, char *old_name, char *new_name, char *new_
         .locs = old_merch.m.locs
     };
 
+    printf("KOMMER HIT\n");
+
     if (ioopm_hash_table_remove(store->merch_table, string_elem(old_name), &local))
     {
-        ioopm_hash_table_insert(store->merch_table, string_elem(new_name), merch_elem(edited_merch));
+        printf("KOMMER HIT OCKSÅ\n");
+        ioopm_hash_table_insert(store->merch_table, string_elem(edited_merch.name), merch_elem(edited_merch));
 
         for (size_t i = 0; i < ioopm_list_size(edited_merch.locs); i++)
         {
@@ -266,6 +271,7 @@ bool ioopm_edit_merch(store_t *store, char *old_name, char *new_name, char *new_
 
         free(old_merch.m.name);
         free(old_merch.m.description);
+
 
         return true;
     }
@@ -391,7 +397,8 @@ bool ioopm_cart_lookup(store_t *store, elem_t key, elem_t *result)
 
 bool ioopm_add_to_cart(store_t *store, size_t cart_id, char *merch_name, size_t amount)
 {
-    if (ioopm_hash_table_has_key(store->merch_table, string_elem(merch_name)))
+    elem_t merch;
+    if (ioopm_hash_table_lookup(store->merch_table, string_elem(merch_name), &merch))
     {
         elem_t elem_cart;
         if (!ioopm_cart_lookup(store, int_elem(cart_id), &elem_cart))
@@ -406,12 +413,12 @@ bool ioopm_add_to_cart(store_t *store, size_t cart_id, char *merch_name, size_t 
         elem_t existing_amount = int_elem(0);
         if (ioopm_hash_table_lookup(elem_cart.c->items, string_elem(merch_name), &existing_amount))
         {
-            ioopm_hash_table_insert(elem_cart.c->items, string_elem(merch_name), int_elem(existing_amount.i + amount));
+            ioopm_hash_table_insert(elem_cart.c->items, string_elem(merch.m.name), int_elem(existing_amount.i + amount));
         }
 
         else
         {
-            ioopm_hash_table_insert(elem_cart.c->items, string_elem(merch_name), int_elem(amount));
+            ioopm_hash_table_insert(elem_cart.c->items, string_elem(merch.m.name), int_elem(amount));
         }
         return true;
     }
@@ -423,18 +430,23 @@ bool ioopm_remove_from_cart(store_t *store, size_t cart_id, char *merch_name, si
 {
     elem_t elem_amount = int_elem(0);
     elem_t cart;
-    
+    elem_t merch;
+    if (!ioopm_hash_table_lookup(store->merch_table, string_elem(merch_name), &merch));
+    {
+        return false;
+    }
+
     if (!ioopm_cart_lookup(store, int_elem(cart_id), &cart))
     {
         return false;
     }
     
-    if (ioopm_hash_table_remove(cart.c->items, string_elem(merch_name), &elem_amount))
+    else if (ioopm_hash_table_remove(cart.c->items, string_elem(merch_name), &elem_amount))
     {
         size_t current_amount = elem_amount.i;
         if (current_amount > amount)
         {
-            ioopm_hash_table_insert(cart.c->items, string_elem(merch_name), int_elem(current_amount - amount));
+            ioopm_hash_table_insert(cart.c->items, string_elem(merch.m.name), int_elem(current_amount - amount));
         }
         return true;
     }
